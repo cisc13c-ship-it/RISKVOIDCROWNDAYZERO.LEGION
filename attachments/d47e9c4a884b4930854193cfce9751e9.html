@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>RISK DÍA ZERO · VOIDCROWN — FUSIÓN DEFINITIVA</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=Chakra+Petch:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b0b12; --card:#14141f; --text:#eceaf4; --muted:#8a87a0;
+    --accent:#bd3193; --accent2:#0891b2; --border:rgba(236,234,244,.12);
+    --cCeniza:#9aa0a6; --cMarea:#2a9d8f; --cNexo:#4361ee; --cHorda:#e63946; --cUmbral:#588157; --cVoid:#bd3193;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    background:radial-gradient(1200px 800px at 50% -10%, #1a1226 0%, var(--bg) 55%);
+    color:var(--text); font-family:'Chakra Petch',monospace; min-height:100vh;
+    display:flex; align-items:center; justify-content:center; padding:12px; overflow-x:hidden;
+  }
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.05;
+    background-image:linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size:40px 40px;
+  }
+  #stage{position:relative; z-index:1; width:100%; max-width:560px}
+  .hidden{display:none !important}
+
+  /* ---------- PANTALLA INICIO ---------- */
+  .screen{background:var(--card); border:1px solid var(--border); border-radius:18px; padding:22px; box-shadow:0 20px 60px rgba(0,0,0,.5)}
+  .kicker{letter-spacing:.35em; font-size:11px; color:var(--accent2); text-transform:uppercase; margin-bottom:8px}
+  h1{font-family:'Bricolage Grotesque',sans-serif; font-weight:800; font-size:clamp(34px,9vw,52px); line-height:.95; letter-spacing:-.02em;
+     background:linear-gradient(135deg,#fff 0%, #d8b4fe 45%, var(--accent) 100%); -webkit-background-clip:text; background-clip:text; color:transparent; margin-bottom:10px}
+  .tagline{color:var(--muted); font-size:14px; line-height:1.55; margin-bottom:20px; border-left:2px solid var(--accent); padding-left:12px}
+  .label{font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); margin:16px 0 8px}
+  .facciones{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+  .fac{
+    display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:10px; cursor:pointer;
+    background:rgba(255,255,255,.03); border:1px solid var(--border); transition:.15s; text-align:left; color:var(--text); font-family:inherit;
+  }
+  .fac:active{transform:scale(.97)}
+  .fac.sel{border-color:var(--accent); background:rgba(189,49,147,.12); box-shadow:0 0 0 1px var(--accent) inset}
+  .dot{width:14px;height:14px;border-radius:50%;flex-shrink:0; box-shadow:0 0 8px currentColor}
+  .fac b{font-size:14px; display:block; font-family:'Bricolage Grotesque'}
+  .fac span{font-size:10px; color:var(--muted); display:block}
+  .row{display:flex; gap:8px}
+  .seg{flex:1; display:flex; background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:10px; overflow:hidden}
+  .seg button{flex:1; padding:9px 4px; background:transparent; border:0; color:var(--muted); font-family:inherit; font-size:12px; cursor:pointer}
+  .seg button.on{background:var(--accent); color:#fff; font-weight:700}
+  .btn-primary{
+    width:100%; margin-top:22px; padding:15px; border-radius:12px; border:0; cursor:pointer;
+    background:linear-gradient(135deg,var(--accent),#7c3aed); color:#fff; font-family:'Bricolage Grotesque';
+    font-size:18px; font-weight:800; letter-spacing:.05em; box-shadow:0 8px 24px rgba(189,49,147,.4);
+  }
+  .btn-primary:active{transform:scale(.98)}
+  .foot{margin-top:14px; font-size:10px; color:var(--muted); text-align:center; letter-spacing:.15em}
+
+  /* ---------- HUD + TABLERO ---------- */
+  #hud{display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px; flex-wrap:wrap}
+  .pill{background:var(--card); border:1px solid var(--border); border-radius:10px; padding:7px 12px; font-size:12px}
+  .pill b{color:var(--accent2); font-family:'Bricolage Grotesque'}
+  #turnoInfo{font-size:11px; color:var(--muted); letter-spacing:.1em}
+  #wrapCanvas{background:var(--card); border:1px solid var(--border); border-radius:16px; padding:10px; position:relative}
+  canvas{width:100%; display:block; border-radius:10px; touch-action:manipulation}
+  #log{height:74px; overflow-y:auto; margin-top:10px; background:rgba(0,0,0,.25); border:1px solid var(--border); border-radius:10px; padding:8px 10px; font-size:11px; line-height:1.5; color:var(--muted)}
+  #log div{margin-bottom:2px}
+  #log .hit{color:#fca5a5}
+  #log .good{color:#86efac}
+  #log .void{color:#f0abfc}
+  .controles{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:10px}
+  .ctrl{
+    padding:11px 4px; border-radius:10px; border:1px solid var(--border); background:var(--card); color:var(--text);
+    font-family:inherit; font-size:11px; cursor:pointer; letter-spacing:.05em;
+  }
+  .ctrl:active{transform:scale(.96)}
+  .ctrl.on{background:var(--accent2); border-color:var(--accent2); color:#fff; font-weight:700}
+  .ctrl:disabled{opacity:.35; cursor:not-allowed}
+  #faseInfo{text-align:center; font-size:12px; color:var(--accent2); margin-top:8px; min-height:18px; letter-spacing:.1em}
+
+  /* ---------- OVERLAYS ---------- */
+  .overlay{position:fixed; inset:0; background:rgba(5,5,10,.85); backdrop-filter:blur(6px); z-index:50; display:flex; align-items:center; justify-content:center; padding:20px}
+  .overlay .card{max-width:420px; width:100%; text-align:center}
+  .overlay h2{font-family:'Bricolage Grotesque'; font-size:32px; margin-bottom:10px}
+  .overlay p{color:var(--muted); font-size:14px; line-height:1.6; margin-bottom:18px}
+  .stats{display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:18px}
+  .stat{background:var(--card); border:1px solid var(--border); border-radius:10px; padding:12px 6px}
+  .stat b{display:block; font-size:22px; font-family:'Bricolage Grotesque'; color:var(--accent)}
+  .stat span{font-size:10px; color:var(--muted); letter-spacing:.1em; text-transform:uppercase}
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <!-- PANTALLA DE INICIO -->
+  <div id="startScreen" class="screen">
+    <div class="kicker">Operación · Sistema Distribuido Red Viva</div>
+    <h1>RISK DÍA ZERO</h1>
+    <p class="tagline">El mapa se parte el primer día. Toma territorios, tira los dados y aguanta los desastres. Si la historia se rompe, nace una grieta. <b style="color:var(--accent)">Voidcrown no se elige: emerge.</b></p>
+
+    <div class="label">Tu facción</div>
+    <div class="facciones" id="facPicker"></div>
+
+    <div class="label">Rivales · Dificultad</div>
+    <div class="row">
+      <div class="seg" id="rivalesSeg">
+        <button data-v="1">1 IA</button><button data-v="2">2 IA</button><button data-v="3" class="on">3 IA</button><button data-v="4">4 IA</button>
+      </div>
+      <div class="seg" id="diffSeg">
+        <button data-v="1">Recluta</button><button data-v="2" class="on">Veterano</button><button data-v="3">Leyenda</button>
+      </div>
+    </div>
+
+    <button class="btn-primary" id="startBtn">DESPLEGAR</button>
+    <div class="foot">FUSIÓN DEFINITIVA · CISC LEGIÓN · TODO EN UN ARCHIVO</div>
+  </div>
+
+  <!-- PANTALLA DE JUEGO -->
+  <div id="gameScreen" class="hidden">
+    <div id="hud">
+      <div class="pill">Turno <b id="hTurno">1</b></div>
+      <div class="pill">Territorios <b id="hTerr">0</b></div>
+      <div class="pill">Tropas <b id="hTrop">0</b></div>
+      <div class="pill">Grietas <b id="hGri">0</b></div>
+    </div>
+    <div id="turnoInfo">TU TURNO</div>
+    <div id="wrapCanvas"><canvas id="map" width="540" height="400"></canvas></div>
+    <div id="faseInfo">FASE: RECLUTAR</div>
+    <div class="controles">
+      <button class="ctrl" id="btnReclutar">RECLUTAR</button>
+      <button class="ctrl" id="btnAtacar">ATACAR</button>
+      <button class="ctrl" id="btnFortificar">FORTIFICAR</button>
+      <button class="ctrl" id="btnFin">FIN TURNO</button>
+    </div>
+    <div id="log"></div>
+  </div>
+
+  <!-- GAME OVER -->
+  <div id="endScreen" class="overlay hidden">
+    <div class="card screen">
+      <div class="kicker" id="endKicker">Fin de la historia</div>
+      <h2 id="endTitulo">VICTORIA</h2>
+      <p id="endTexto">Tu legado permanece. El mapa respira de nuevo.</p>
+      <div class="stats">
+        <div class="stat"><b id="sTurnos">0</b><span>Turnos</span></div>
+        <div class="stat"><b id="sConq">0</b><span>Conquistas</span></div>
+        <div class="stat"><b id="sGri">0</b><span>Grietas</span></div>
+      </div>
+      <button class="btn-primary" id="againBtn">JUGAR DE NUEVO</button>
+    </div>
+  </div>
+
+  <!-- VOIDCROWN EMERGE -->
+  <div id="voidScreen" class="overlay hidden">
+    <div class="card screen">
+      <div class="kicker" style="color:var(--accent)">La historia se rompió</div>
+      <h2 style="background:linear-gradient(135deg,#fff,#f0abfc,var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent">VOIDCROWN HA EMERGIDO</h2>
+      <p>Las grietas se abrieron de par en par. Algo del vacío ahora reclama territorios. No negocia. No se rinde. Solo consume.</p>
+      <button class="btn-primary" id="voidBtn">ENFRENTARLO</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+"use strict";
+
+// ====== CONFIG ======
+var COLS=6, ROWS=4, TOTAL=COLS*ROWS;
+var FACCIONES=[
+  {id:"Ceniza",  color:"#9aa0a6", desc:"Restos del mando continental"},
+  {id:"Marea",   color:"#2a9d8f", desc:"Flotas que controlan costas"},
+  {id:"Nexo",    color:"#4361ee", desc:"Red satelital y enclaves técnicos"},
+  {id:"Horda",   color:"#e63946", desc:"Señores de la guerra del interior"},
+  {id:"Umbral",  color:"#588157", desc:"Enclaves que viven bajo tierra"}
+];
+var VOID={id:"Voidcrown", color:"#bd3193", desc:"Lo que emerge del vacío"};
+
+var NOMBRES=["Ceniza Norte","Marea Alta","Nexo Prime","Horda Roja","Umbral Profundo","Costa Rota",
+  "Llanura Gris","Delta Muerto","Torre Vigia","Paso Helado","Bosque Negro","Valle Seco",
+  "Isla Fantasma","Muralla Oeste","Cuna de Acero","Pantano Vivo","Cima Rota","Duna Roja",
+  "Puerto Olvidado","Yacimiento","Faro Siniestro","Meseta","Tundra","Anillo Sur"];
+
+// ====== ESTADO ======
+var state="start";            // start | playing | ended
+var playerFac=0, rivales=3, diff=2;
+var terr=[];                  // {id,nom,x,y,owner,tropas,neighbors}
+var jugadores=[];             // [{fac,esIA}]
+var turnoJug=0, ronda=1, fase="reclutar";
+var selA=null, selB=null;     // selección para ataque/fortificar
+var conquistadas=0, grietas=0;
+var voidActivo=false;
+var timers=[];
+var canvas=document.getElementById("map"), ctx=canvas.getContext("2d");
+var CW=540, CH=400, PAD=24;
+var cellW=(CW-PAD*2)/COLS, cellH=(CH-PAD*2)/ROWS;
+
+var el=function(id){return document.getElementById(id)};
+var logEl=el("log");
+function log(msg,cls){var d=document.createElement("div"); if(cls)d.className=cls; d.textContent="> "+msg; logEl.appendChild(d); logEl.scrollTop=logEl.scrollHeight; while(logEl.children.length>40)logEl.removeChild(logEl.firstChild)}
+
+// ====== INICIO UI ======
+var facPicker=el("facPicker");
+FACCIONES.forEach(function(f,i){
+  var b=document.createElement("button"); b.className="fac"+(i===0?" sel":"");
+  b.innerHTML='<span class="dot" style="background:'+f.color+';color:'+f.color+'"></span><span><b>'+f.id+'</b><span>'+f.desc+'</span></span>';
+  b.addEventListener("click",function(){
+    playerFac=i;
+    [].forEach.call(facPicker.children,function(c,j){c.classList.toggle("sel",j===i)});
+  });
+  facPicker.appendChild(b);
+});
+function segBind(id,cb){var s=el(id);[].forEach.call(s.children,function(b){b.addEventListener("click",function(){[].forEach.call(s.children,function(x){x.classList.remove("on")});b.classList.add("on");cb(parseInt(b.dataset.v))})})}
+segBind("rivalesSeg",function(v){rivales=v});
+segBind("diffSeg",function(v){diff=v});
+
+// ====== INICIALIZAR PARTIDA ======
+function nuevaPartida(){
+  terr=[]; jugadores=[]; ronda=1; turnoJug=0; fase="reclutar"; selA=selB=null;
+  conquistadas=0; grietas=0; voidActivo=false;
+  timers.forEach(clearTimeout); timers=[];
+
+  // territorios
+  for(var y=0;y<ROWS;y++)for(var x=0;x<COLS;x++){
+    var id=y*COLS+x;
+    var nb=[];
+    if(x>0)nb.push(id-1); if(x<COLS-1)nb.push(id+1);
+    if(y>0)nb.push(id-COLS); if(y<ROWS-1)nb.push(id+COLS);
+    terr.push({id:id,nom:NOMBRES[id]||("T"+id),x:x,y:y,owner:-1,tropas:1,nb:nb,grieta:false});
+  }
+  // jugadores: player + rivales IA
+  var ids=[0,1,2,3,4].filter(function(i){return i!==playerFac});
+  jugadores=[{fac:playerFac,esIA:false}];
+  for(var r=0;r<rivales;r++) jugadores.push({fac:ids[r],esIA:true});
+  // asignar territorios iniciales
+  var orden=terr.map(function(t){return t.id});
+  shuffle(orden);
+  var j=0;
+  orden.forEach(function(id){
+    terr[id].owner=j%jugadores.length; terr[id].tropas=3; j++;
+  });
+  // si sobran territorios (pocos jugadores) quedan neutrales con 2 tropas
+  log("Despliegue inicial. "+jugadores.length+" facciones en el mapa.","good");
+  el("endScreen").classList.add("hidden");
+  el("voidScreen").classList.add("hidden");
+  actualizarHUD(); dibujar();
+}
+
+function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}}
+
+// ====== DIBUJO ======
+function colorOwner(o){
+  if(o===-1)return "#2a2a35";
+  if(o===99)return VOID.color;
+  return FACCIONES[jugadores[o].fac].color;
+}
+function dibujar(){
+  ctx.clearRect(0,0,CW,CH);
+  // fondo
+  var g=ctx.createRadialGradient(CW/2,CH/2,50,CW/2,CH/2,400);
+  g.addColorStop(0,"#16162a"); g.addColorStop(1,"#0a0a14");
+  ctx.fillStyle=g; ctx.fillRect(0,0,CW,CH);
+
+  terr.forEach(function(t){
+    var cx=PAD+t.x*cellW+cellW/2, cy=PAD+t.y*cellH+cellH/2;
+    var w=cellW-8, h=cellH-8;
+    var x=cx-w/2, y=cy-h/2;
+    // sombra
+    ctx.fillStyle="rgba(0,0,0,.4)"; roundRect(ctx,x+2,y+3,w,h,8); ctx.fill();
+    // relleno
+    var c=colorOwner(t.owner);
+    ctx.fillStyle=c;
+    ctx.globalAlpha=t.owner===-1?0.35:0.85;
+    roundRect(ctx,x,y,w,h,8); ctx.fill();
+    ctx.globalAlpha=1;
+    // borde
+    ctx.lineWidth=(selA===t.id||selB===t.id)?3:1.5;
+    ctx.strokeStyle=(selA===t.id)?"#fbbf24":(selB===t.id?"#f87171":"rgba(255,255,255,.25)");
+    roundRect(ctx,x,y,w,h,8); ctx.stroke();
+    // grieta
+    if(t.grieta){ctx.strokeStyle="#f0abfc"; ctx.lineWidth=2; ctx.beginPath();ctx.moveTo(x+6,y+6);ctx.lineTo(x+w-6,y+h-6);ctx.moveTo(x+w-6,y+6);ctx.lineTo(x+6,y+h-6);ctx.stroke()}
+    // texto
+    ctx.fillStyle=(t.owner===-1)?"#8a87a0":"#fff";
+    ctx.font="bold 14px 'Bricolage Grotesque',sans-serif"; ctx.textAlign="center"; ctx.textBaseline="middle";
+    ctx.fillText(t.tropas, cx, cy-4);
+    ctx.font="8px 'Chakra Petch',monospace";
+    ctx.fillStyle=(t.owner===-1)?"#5a5770":"rgba(255,255,255,.75)";
+    ctx.fillText(t.nom.slice(0,10), cx, cy+10);
+  });
+}
+function roundRect(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
+
+// ====== HUD ======
+function actualizarHUD(){
+  var mis=terr.filter(function(t){return t.owner===0});
+  var tropas=mis.reduce(function(s,t){return s+t.tropas},0);
+  el("hTurno").textContent=ronda;
+  el("hTerr").textContent=mis.length;
+  el("hTrop").textContent=tropas;
+  el("hGri").textContent=grietas;
+  el("faseInfo").textContent="FASE: "+fase.toUpperCase();
+  el("turnoInfo").textContent=(turnoJug===0)?"TU TURNO — "+FACCIONES[jugadores[turnoJug].fac].id : "TURNO IA — "+FACCIONES[jugadores[turnoJug].fac].id;
+  el("btnReclutar").classList.toggle("on", fase==="reclutar");
+  el("btnAtacar").classList.toggle("on", fase==="atacar");
+  el("btnFortificar").classList.toggle("on", fase==="fortificar");
+  var esTurnoJug=(turnoJug===0 && state==="playing");
+  el("btnReclutar").disabled=!esTurnoJug||fase!=="reclutar";
+  el("btnAtacar").disabled=!esTurnoJug;
+  el("btnFortificar").disabled=!esTurnoJug;
+  el("btnFin").disabled=!esTurnoJug;
+}
+
+// ====== FASES JUGADOR ======
+function reclutar(){
+  if(fase!=="reclutar"||turnoJug!==0)return;
+  var mis=terr.filter(function(t){return t.owner===0});
+  var n=Math.max(3, Math.floor(mis.length/3));
+  // bonus por fila completa
+  for(var y=0;y<ROWS;y++){var row=terr.filter(function(t){return t.y===y&&t.owner===0}); if(row.length===COLS)n+=2}
+  // distribuir al territorio con menos tropas
+  var target=mis.sort(function(a,b){return a.tropas-b.tropas})[0];
+  if(target){target.tropas+=n; log("Reclutas "+n+" tropas en "+target.nom,"good")}
+  fase="atacar"; selA=selB=null; actualizarHUD(); dibujar();
+}
+
+function clickTerritorio(px,py){
+  if(state!=="playing"||turnoJug!==0)return;
+  var x=Math.floor((px-PAD)/cellW), y=Math.floor((py-PAD)/cellH);
+  if(x<0||x>=COLS||y<0||y>=ROWS)return;
+  var id=y*COLS+x, t=terr[id];
+  if(fase==="atacar"){
+    if(t.owner===0 && t.tropas>1){selA=id; selB=null; log("Atacante: "+t.nom+" ("+t.tropas+" tropas)"); dibujar(); return}
+    if(selA!==null && t.owner!==0 && terr[selA].nb.indexOf(id)>=0){
+      selB=id; dibujar();
+      resolverAtaque(selA,selB,0);
+      return;
+    }
+    log("Selecciona tu territorio (>1 tropa) y luego un enemigo adyacente");
+  }
+  if(fase==="fortificar"){
+    if(t.owner===0 && t.tropas>1){selA=id; selB=null; log("Origen: "+t.nom); dibujar(); return}
+    if(selA!==null && t.owner===0 && terr[selA].nb.indexOf(id)>=0 && id!==selA){
+      var mover=Math.floor(terr[selA].tropas/2);
+      terr[selA].tropas-=mover; terr[id].tropas+=mover;
+      log("Fortificado: "+mover+" tropas de "+terr[selA].nom+" → "+t.nom,"good");
+      selA=selB=null; fase="fin"; actualizarHUD(); dibujar();
+    }
+  }
+}
+
+function resolverAtaque(a,b,profundidad){
+  var A=terr[a], B=terr[b];
+  if(A.tropas<=1||B.owner===A.owner){selA=selB=null;dibujar();return}
+  var nA=Math.min(3,A.tropas-1), nB=Math.min(2,B.tropas);
+  var dA=[],dB=[];
+  for(var i=0;i<nA;i++)dA.push(1+Math.floor(Math.random()*6));
+  for(var j=0;j<nB;j++)dB.push(1+Math.floor(Math.random()*6));
+  dA.sort(function(x,y){return y-x}); dB.sort(function(x,y){return y-x});
+  var perdA=0, perdB=0;
+  for(var k=0;k<Math.min(nA,nB);k++){ if(dA[k]>dB[k])perdB++; else perdA++ }
+  A.tropas-=perdA; B.tropas-=perdB;
+  log("Ataque "+A.nom+"→"+B.nom+": "+dA.join("-")+" vs "+dB.join("-")+" · pierde A:"+perdA+" B:"+perdB, perdA>perdB?"hit":"good");
+  if(B.tropas<=0){
+    // conquista
+    var mover=Math.min(nA, A.tropas-1);
+    A.tropas-=mover; B.tropas=mover;
+    var viejoOwner=B.owner; B.owner=A.owner; B.grieta=false;
+    conquistadas++;
+    log("¡CONQUISTADO! "+B.nom+" cae ante "+FACCIONES[jugadores[A.owner].fac].id,"good");
+    // eliminar facción?
+    if(viejoOwner>=0 && !terr.some(function(t){return t.owner===viejoOwner})){
+      log(FACCIONES[jugadores[viejoOwner].fac].id+" ha sido ELIMINADA del mapa","hit");
+    }
+    if(viejoOwner===99){log("Recuperaste territorio del Vacío","good")}
+    selA=selB=null; actualizarHUD(); dibujar();
+    if(checkFin())return;
+  } else {
+    selA=selB=null; actualizarHUD(); dibujar();
+  }
+}
+
+// ====== IA ======
+function turnoIA(){
+  if(state!=="playing")return;
+  var j=turnoJug;
+  if(jugadores[j].fac===undefined)return;
+  var mis=terr.filter(function(t){return t.owner===j});
+  if(mis.length===0){siguienteTurno();return}
+  // reclutar
+  var n=Math.max(3, Math.floor(mis.length/3)) + (diff-1);
+  var target=mis.sort(function(a,b){return a.tropas-b.tropas})[0];
+  if(target)target.tropas+=n;
+  log(FACCIONES[jugadores[j].fac].id+" recluta "+n+" tropas");
+  actualizarHUD(); dibujar();
+  // atacar (hasta 3 intentos)
+  var ataques=0;
+  timers.push(setTimeout(function pasoIA(){
+    if(state!=="playing")return;
+    mis=terr.filter(function(t){return t.owner===j});
+    var posible=null;
+    for(var i=0;i<mis.length;i++){
+      var t=mis[i];
+      if(t.tropas<=1)continue;
+      for(var k=0;k<t.nb.length;k++){
+        var vec=terr[t.nb[k]];
+        if(vec.owner!==j && t.tropas>vec.tropas+1){posible={a:t.id,b:vec.id};break}
+      }
+      if(posible)break;
+    }
+    if(posible && ataques<3){
+      ataques++;
+      resolverAtaque(posible.a,posible.b,0);
+      if(checkFin())return;
+      timers.push(setTimeout(pasoIA,600));
+    } else {
+      // fortificar: mover tropas a frontera
+      timers.push(setTimeout(function(){siguienteTurno()},500));
+    }
+  },700));
+}
+
+// ====== TURNO / RONDA ======
+function siguienteTurno(){
+  if(state!=="playing")return;
+  turnoJug++;
+  if(turnoJug>=jugadores.length){
+    turnoJug=0; ronda++;
+    desastre();
+    if(checkFin())return;
+  }
+  fase="reclutar"; selA=selB=null;
+  actualizarHUD(); dibujar();
+  if(turnoJug!==0){
+    timers.push(setTimeout(turnoIA,600));
+  } else {
+    log("— RONDA "+ronda+" · TU TURNO —","good");
+  }
+}
+
+// ====== DESASTRE / GRIETAS / VOIDCROWN ======
+function desastre(){
+  if(Math.random()<0.75){
+    var candidatas=terr.filter(function(t){return !t.grieta});
+    if(candidatas.length){
+      var t=candidatas[Math.floor(Math.random()*candidatas.length)];
+      var pierde=1+Math.floor(Math.random()*3);
+      t.tropas=Math.max(0,t.tropas-pierde);
+      log("DESASTRE en "+t.nom+": pierde "+pierde+" tropas","hit");
+      if(t.tropas<=0){
+        t.owner=-1; t.grieta=true; grietas++;
+        log("GRIETA abierta en "+t.nom+". La historia se rompe…","void");
+      }
+    }
+  }
+  // Voidcrown emerge
+  if(!voidActivo && grietas>=5){
+    voidActivo=true;
+    // spawn: tomar 3 territorios aleatorios
+    var spots=terr.filter(function(t){return t.owner!==0}).slice();
+    shuffle(spots);
+    for(var i=0;i<Math.min(3,spots.length);i++){spots[i].owner=99; spots[i].tropas=4; spots[i].grieta=true}
+    el("voidScreen").classList.remove("hidden");
+    log("VOIDCROWN HA EMERGIDO del vacío","void");
+  }
+  // Voidcrown ataca
+  if(voidActivo){
+    timers.push(setTimeout(function(){
+      if(state!=="playing")return;
+      var vT=terr.filter(function(t){return t.owner===99});
+      vT.forEach(function(t){
+        if(t.tropas<=1)return;
+        var vec=t.nb.map(function(i){return terr[i]}).filter(function(v){return v.owner!==99});
+        if(vec.length){
+          var v=vec[Math.floor(Math.random()*vec.length)];
+          if(t.tropas>v.tropas){
+            var m=Math.min(3,t.tropas-1);
+            v.tropas=0; v.owner=99; v.tropas=m; v.grieta=true; t.tropas-=m;
+            log("Voidcrown consume "+v.nom,"void");
+          }
+        }
+      });
+      actualizarHUD(); dibujar(); checkFin();
+    },800));
+  }
+  actualizarHUD(); dibujar();
+}
+
+// ====== FIN DE PARTIDA ======
+function checkFin(){
+  var vivos=jugadores.filter(function(j,i){return terr.some(function(t){return t.owner===i})});
+  var mis=terr.filter(function(t){return t.owner===0}).length;
+  if(mis===0){fin(false); return true}
+  // victoria: controlas todo lo no-vacío, o eliminaste a todos los rivales
+  if(vivos.length===1 && vivos[0]===jugadores[0] && !voidActivo){fin(true); return true}
+  if(voidActivo && !terr.some(function(t){return t.owner===99}) && vivos.length===1){fin(true); return true}
+  return false;
+}
+function fin(gano){
+  state="ended";
+  timers.forEach(clearTimeout);
+  el("sTurnos").textContent=ronda;
+  el("sConq").textContent=conquistadas;
+  el("sGri").textContent=grietas;
+  if(gano){
+    el("endKicker").textContent="Legado consolidado";
+    el("endTitulo").textContent="VICTORIA";
+    el("endTitulo").style.color="#86efac";
+    el("endTexto").textContent="El mapa respira de nuevo bajo tu mando. Voidcrown retrocede al vacío. Tu nombre queda en la historia.";
+  } else {
+    el("endKicker").textContent="El vacío ganó";
+    el("endTitulo").textContent="DERROTA";
+    el("endTitulo").style.color="#fca5a5";
+    el("endTexto").textContent="Tus territorios cayeron. Las grietas se tragaron tu legado. Pero la historia puede reescribirse…";
+  }
+  el("endScreen").classList.remove("hidden");
+}
+
+// ====== EVENTOS ======
+el("startBtn").addEventListener("click",function(){
+  state="playing";
+  el("startScreen").classList.add("hidden");
+  el("gameScreen").classList.remove("hidden");
+  nuevaPartida();
+  log("Operación RISK DÍA ZERO iniciada. Facción: "+FACCIONES[playerFac].id,"good");
+});
+el("againBtn").addEventListener("click",function(){
+  el("endScreen").classList.add("hidden");
+  el("startScreen").classList.remove("hidden");
+  el("gameScreen").classList.add("hidden");
+  state="start";
+});
+el("voidBtn").addEventListener("click",function(){el("voidScreen").classList.add("hidden")});
+el("btnReclutar").addEventListener("click",reclutar);
+el("btnAtacar").addEventListener("click",function(){if(turnoJug===0){fase="atacar";selA=selB=null;actualizarHUD();dibujar()}});
+el("btnFortificar").addEventListener("click",function(){if(turnoJug===0){fase="fortificar";selA=selB=null;actualizarHUD();dibujar()}});
+el("btnFin").addEventListener("click",function(){if(turnoJug===0){siguienteTurno()}});
+
+canvas.addEventListener("click",function(e){
+  var r=canvas.getBoundingClientRect();
+  var px=(e.clientX-r.left)*(CW/r.width);
+  var py=(e.clientY-r.top)*(CH/r.height);
+  clickTerritorio(px,py);
+});
+
+// resize canvas para móvil
+function fit(){var r=canvas.parentElement.getBoundingClientRect(); canvas.style.height=(r.width*CH/CW)+"px"}
+window.addEventListener("resize",fit); fit();
+
+})();
+</script>
+</body>
+</html>

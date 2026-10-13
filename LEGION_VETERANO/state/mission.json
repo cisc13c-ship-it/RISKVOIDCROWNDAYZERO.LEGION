@@ -1,0 +1,10 @@
+{
+  "mission_id": "VET-20261005-VOIDCROWN-FUSION-01",
+  "role": "VETERANO",
+  "executor": "413",
+  "check": "PENDIENTE",
+  "project": "RISK DÍA ZERO / VOIDCROWN",
+  "opened": "2026-10-05T04:50:00Z",
+  "commands": ["init", "inspect", "snapshot", "build", "test", "handoff"],
+  "rule": "COMANDO ≠ MISIÓN. Un ID para todo el ciclo."
+}

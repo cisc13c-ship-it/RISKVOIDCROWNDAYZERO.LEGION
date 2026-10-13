@@ -1,0 +1,41 @@
+{
+  "url": "http://127.0.0.1:8081/",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "RISK DÍA ZERO",
+      "hasCanvas": false,
+      "bodyTextLen": 81,
+      "bodyTextHash": "2178448839db12304cf5cfeac1fda6800b8db38f2bf220f2aae4211fa0979bf1",
+      "bodyTextPrefix": "VOIDCROWN EL DÍA CERO Toca para comenzar. El audio se abre con e",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-built.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "RISK DÍA ZERO",
+      "hasCanvas": false,
+      "bodyTextLen": 81,
+      "bodyTextHash": "2178448839db12304cf5cfeac1fda6800b8db38f2bf220f2aae4211fa0979bf1",
+      "bodyTextPrefix": "VOIDCROWN EL DÍA CERO Toca para comenzar. El audio se abre con e",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-built-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/app-builder-built.json",
+  "divergesFromBaseline": true,
+  "baselineReasons": [
+    "desktop: body text changed (0 -> 81 chars, hash mismatch)",
+    "mobile: body text changed (0 -> 81 chars, hash mismatch)"
+  ]
+}

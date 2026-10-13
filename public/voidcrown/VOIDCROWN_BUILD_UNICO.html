@@ -1,0 +1,3162 @@
+<!DOCTYPE html>
+<!--
+VOIDCROWN_BUILD_UNICO 12.1.0-UNICO-VIVO
+BASE: 12.0.0 compilado 20261009 SHA e2495085… (ese archivo NO se borra)
+AÑADIDO (no se quitó núcleo, misiones, prólogo, canal, living, Fénix, Kill):
+  - Diario que no se borra (sobrevive ciclo y Kill vía mente)
+  - Golpe → cicatriz + hambre + éxodo + a veces grieta
+  - RECONSTRUIR cierra el cráter
+  - EDAI recuerda: si pierde más de lo que gana, deja de insistir en atacar
+  - Fenómeno clicable en el globo + aviso
+  - Panel MISIONES real (antes el botón no existía) y recompensa sobre W.ap
+  - Acto a 10 nudos. Continuar mundo sube ciclo y conserva memoria
+CHECK: CANDIDATE. Capacidad ≠ verificación.
+REGLA PARA LA SIGUIENTE IA: mejora ESTE archivo. No abras otra verdad. No borres sistemas. UNKNOWN = STOP.
+-->
+
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<title>VOIDCROWN · BUILD ÚNICO · TODO FUSIONADO</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#000;--glass:rgba(4,8,16,.68);--cyan:#4ec4f0;--red:#ff3a2f;--amber:#ff8a3d;
+  --green:#3dce7a;--muted:#9aacc4;--text:#f4f8ff;--purple:#c070ff;--fire:#ff6b2d;
+  --mono:"JetBrains Mono",monospace;--sans:Montserrat,system-ui,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:var(--sans);color:var(--text);user-select:none;-webkit-tap-highlight-color:transparent}
+#c{position:fixed;inset:0;z-index:0}
+canvas{display:block;width:100%!important;height:100%!important}
+.hud{position:fixed;inset:0;z-index:10;pointer-events:none}
+.hud .p{pointer-events:auto}
+.g{background:var(--glass);backdrop-filter:blur(16px) saturate(1.25);-webkit-backdrop-filter:blur(16px) saturate(1.25);border:1px solid rgba(255,255,255,.1);border-radius:14px;box-shadow:0 10px 40px rgba(0,0,0,.55)}
+.top{position:absolute;top:8px;left:50%;transform:translateX(-50%);display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:96vw;z-index:20}
+.chip{font-size:10px;font-weight:700;letter-spacing:.05em;padding:6px 12px;border-radius:11px;background:rgba(8,14,28,.94);border:1px solid rgba(255,255,255,.12);color:var(--muted)}
+.chip.hot{color:var(--red);border-color:rgba(255,58,47,.55);box-shadow:0 0 12px rgba(255,50,40,.2)}
+.chip.ok{color:#5dff9a;border-color:rgba(61,206,122,.5)}
+.chip.solar{color:#ffd27a;border-color:rgba(255,180,60,.55);box-shadow:0 0 16px rgba(255,160,40,.22)}
+.chip.smash{color:#ff6b2d;border-color:rgba(255,100,40,.55);box-shadow:0 0 14px rgba(255,80,20,.25)}
+.chip.lod{color:#a0d0ff;border-color:rgba(100,180,255,.4)}
+.ops{position:absolute;top:48px;left:10px;width:min(300px,90vw);padding:11px 13px;max-height:54vh;overflow-y:auto;z-index:15}
+.ops h1{font-size:12px;letter-spacing:.04em;margin-bottom:1px}
+.ops .sub{font-size:8px;color:var(--muted);letter-spacing:.1em;margin-bottom:6px}
+.ops .row{display:flex;gap:5px;flex-wrap:wrap;margin:5px 0}
+button{font-family:var(--sans);font-size:10px;font-weight:600;padding:7px 10px;border-radius:9px;border:1px solid rgba(255,255,255,.14);background:rgba(20,30,50,.92);color:var(--text);cursor:pointer;transition:.15s}
+button:hover{border-color:var(--cyan);color:#fff}
+button.primary{background:linear-gradient(135deg,#1a3a6a,#243a66);border-color:#3d5a99}
+button.danger{background:rgba(60,15,15,.92);border-color:#663}
+button.ghost{background:transparent}
+button.solar{background:linear-gradient(135deg,#3a2800,#5a3a00);border-color:#c08020;color:#ffd27a}
+button.smash{background:linear-gradient(135deg,#4a1800,#6a2800);border-color:#e06020;color:#ff9a50}
+button.phen{background:rgba(40,20,10,.9);border-color:#a05020;color:#ffb060}
+#log{max-height:64px;overflow:auto;font-size:9px;color:var(--muted);line-height:1.35;margin-top:5px}
+.bottom{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:6px;flex-wrap:wrap;justify-content:center;z-index:15}
+.toast{position:absolute;left:50%;top:16%;transform:translateX(-50%);background:rgba(0,0,0,.88);padding:11px 18px;border-radius:12px;font-size:12px;opacity:0;transition:.4s;z-index:30;pointer-events:none;border:1px solid rgba(255,255,255,.12);max-width:92vw;text-align:center}
+.toast.show{opacity:1}
+#boot{position:fixed;inset:0;z-index:100;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .9s}
+#boot.hide{opacity:0;pointer-events:none}
+#boot h1{font-size:clamp(24px,5.5vw,40px);letter-spacing:.22em;margin-bottom:6px;background:linear-gradient(90deg,#ffd27a,#ff6b2d,#4ec4f0,#c070ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+#boot p{font-size:11px;color:var(--muted);letter-spacing:.14em}
+.mode-bar{position:absolute;top:8px;right:10px;display:flex;flex-direction:column;gap:5px;z-index:20}
+.mode-bar button{font-size:9px;padding:6px 9px}
+.banner{position:absolute;top:44px;left:50%;transform:translateX(-50%);padding:8px 15px;border-radius:10px;font-size:11px;font-weight:600;z-index:25;max-width:90vw;text-align:center;display:none}
+.banner.warn{background:rgba(80,30,0,.92);border:1px solid #c07020;color:#ffd27a;display:block}
+.banner.danger{background:rgba(60,10,10,.94);border:1px solid #c03030;color:#ff8080;display:block}
+.banner.phen{background:rgba(50,20,5,.94);border:1px solid #e07020;color:#ffb070;display:block}
+.fac-line{font-size:9px;color:var(--muted);margin-top:3px}
+.fac-line strong{font-weight:700}
+.lod-hint{position:absolute;bottom:52px;left:50%;transform:translateX(-50%);font-size:9px;color:rgba(160,200,255,.7);letter-spacing:.08em;z-index:12;pointer-events:none}
+
+.arsenal{position:absolute;top:48px;right:10px;width:min(320px,92vw);max-height:56vh;overflow-y:auto;padding:10px 12px;z-index:16;display:none}
+.arsenal h2{font-size:11px;letter-spacing:.08em;margin-bottom:6px;color:#ffd27a}
+.arsenal .item{font-size:9px;border-bottom:1px solid rgba(255,255,255,.06);padding:6px 0;line-height:1.35}
+.arsenal .item b{color:#4ec4f0;display:block;font-size:10px}
+.arsenal .role{color:#9aacc4}
+.arsenal .use{color:#c8d4e8}
+#btn-arsenal,#btn-codex{font-size:9px}
+.codex-box{font-size:10px;color:#c8d4e8;line-height:1.4;max-height:40vh;overflow-y:auto;white-space:pre-wrap}
+
+
+#reflejo-overlay{position:fixed;inset:0;z-index:90;background:rgba(2,4,10,.92);display:none;align-items:center;justify-content:center;padding:16px;overflow-y:auto}
+#reflejo-overlay.show{display:flex}
+#reflejo-card{max-width:520px;width:100%;background:linear-gradient(160deg,#120a14 0%,#0a101c 50%,#0c1820 100%);border:1px solid #3a2a48;border-radius:16px;padding:22px 20px;box-shadow:0 0 60px rgba(255,80,40,.15),0 0 120px rgba(80,40,120,.12)}
+#reflejo-card h1{font-size:13px;letter-spacing:.2em;color:#ff6b2d;margin-bottom:6px}
+#reflejo-card h2{font-size:20px;color:#ffd27a;margin-bottom:12px;line-height:1.25}
+#reflejo-card .body{font-size:13px;color:#c8d4e8;line-height:1.55;white-space:pre-wrap}
+#reflejo-card .sig{margin-top:16px;font-size:11px;color:#6a7a90;font-style:italic}
+#reflejo-card button{margin-top:14px;width:100%}
+.shadow-pulse{animation:sp 1.2s ease-in-out infinite}
+@keyframes sp{0%,100%{opacity:.5}50%{opacity:1}}
+
+
+#session-bar{position:absolute;top:44px;left:50%;transform:translateX(-50%);z-index:20;background:rgba(8,12,20,.88);border:1px solid rgba(255,107,45,.35);border-radius:999px;padding:6px 14px;font-size:11px;color:#ffd27a;letter-spacing:.04em;white-space:nowrap;max-width:94vw;overflow:hidden;text-overflow:ellipsis}
+#session-end{position:fixed;inset:0;z-index:95;background:rgba(2,4,10,.93);display:none;align-items:center;justify-content:center;padding:16px}
+#session-end.show{display:flex}
+#session-end .box{max-width:420px;width:100%;background:#0c121c;border:1px solid #2a3548;border-radius:16px;padding:20px}
+#session-end h2{color:#ffd27a;font-size:18px;margin-bottom:8px}
+#session-end p{font-size:13px;color:#9aacc4;line-height:1.5;margin-bottom:8px}
+.lab-only{display:none}
+body.lab .lab-only{display:flex}
+body.lab .lab-only.row{display:flex}
+body:not(.lab) .lab-only{display:none !important}
+#simple-help{font-size:11px;color:#8b9bb4;padding:4px 0 0}
+
+
+/* === VOIDCROWN MISSIONS + MONETIZACIÓN ADAPTATIVA 20261009 === */
+#mission-panel{position:fixed;right:8px;bottom:8px;width:min(340px,94vw);max-height:48vh;overflow:auto;z-index:80;
+background:linear-gradient(165deg,#0c121c,#101828);border:1px solid #3a5070;border-radius:12px;padding:10px 12px;
+font-size:12px;color:#c8d8ec;box-shadow:0 8px 28px #000a}
+#mission-panel h3{margin:0 0 6px;font-size:11px;letter-spacing:2px;color:#7ab8ff;text-transform:uppercase}
+#mission-panel .mq{border:1px solid #2a3a50;border-radius:8px;padding:8px;margin:6px 0;background:#0a1018}
+#mission-panel .mq.active{border-color:#6af;box-shadow:0 0 12px #3af3}
+#mission-panel .mq.done{opacity:.55;border-color:#3a5}
+#mission-panel .mq b{color:#e8f0ff}
+#mission-panel .mq .rew{color:#8d8;font-size:11px}
+#mission-panel .mq button{margin-top:6px;padding:5px 10px;border-radius:6px;border:0;background:#1a4a6a;color:#dff;cursor:pointer;font-size:11px}
+#mission-panel .mq button:hover{background:#2a6a9a}
+#btn-missions{position:fixed;right:8px;bottom:calc(48vh + 16px);z-index:81;padding:8px 12px;border-radius:8px;
+background:#1a3050;color:#9cf;border:1px solid #4a70a0;cursor:pointer;font-weight:700;font-size:11px;letter-spacing:1px}
+#btn-missions:hover{background:#2a4868}
+#store-strip{display:none;position:fixed;left:8px;bottom:8px;z-index:80;max-width:min(320px,90vw);
+background:#12100c;border:1px solid #5a4820;border-radius:10px;padding:10px 12px;color:#e8d8a8;font-size:11px}
+#store-strip.show{display:block}
+#store-strip strong{color:#ffd27a}
+#store-strip button{margin:4px 4px 0 0;padding:5px 8px;border-radius:6px;border:0;background:#3a3010;color:#fd8;cursor:pointer;font-size:10px}
+#store-strip .muted{color:#a89060;font-size:10px;margin-top:4px}
+
+
+#vc-boot{position:fixed;inset:0;z-index:9999;background:#05080e;color:#d8e4f0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center}
+#vc-boot h1{letter-spacing:6px;color:#ff6b2d;font-size:1.6rem;margin:0 0 8px}
+#vc-boot .tagline{color:#8ab;max-width:420px;font-size:13px;line-height:1.5;margin-bottom:18px}
+#vc-boot button{margin:6px;padding:12px 18px;border:0;border-radius:10px;font-weight:700;cursor:pointer;font-size:13px}
+#vc-boot .primary{background:#ff6b2d;color:#110800}
+#vc-boot .ghost{background:#1a2433;color:#9cf;border:1px solid #345}
+#vc-boot .mini{font-size:11px;color:#678;margin-top:14px;max-width:400px}
+#vc-cin{position:fixed;inset:0;z-index:9998;background:#03050a;color:#cde;display:none;flex-direction:column;justify-content:flex-end;padding:28px;font-size:15px;line-height:1.55}
+#vc-cin .who{color:#ff9a4a;font-size:12px;letter-spacing:2px;margin-bottom:8px}
+#vc-cin .skip{position:absolute;top:12px;right:12px;background:#222;color:#aaa;border:0;padding:8px 12px;border-radius:8px;cursor:pointer}
+#canal-legion{position:fixed;left:8px;top:50%;transform:translateY(-50%);z-index:85;width:min(300px,90vw);max-height:55vh;overflow:auto;
+background:#0a1018;border:1px solid #3a4a30;border-radius:12px;padding:10px;font-size:11px;color:#c8e0c0;display:none}
+#canal-legion h4{margin:0 0 6px;color:#8d8;letter-spacing:1px}
+#canal-legion .msg{border-left:3px solid #4a8;padding:6px 8px;margin:6px 0;background:#0c1410}
+#canal-legion input{width:100%;padding:8px;border-radius:6px;border:1px solid #345;background:#0e1620;color:#def;margin-top:6px}
+#canal-legion button{margin-top:6px;padding:6px 10px;border:0;border-radius:6px;background:#2a5030;color:#cfc;cursor:pointer;width:100%}
+#btn-canal{position:fixed;left:8px;top:42%;z-index:86;padding:8px 10px;border-radius:8px;border:1px solid #4a6a40;background:#1a3020;color:#9d9;cursor:pointer;font-size:11px;font-weight:700}
+
+#vc-cin{position:fixed;inset:0;z-index:9998;background:#03050a;color:#e8dcc8;display:none;flex-direction:column;justify-content:flex-end;padding:28px 22px 36px;overflow:hidden}
+#vc-cin .vc-noise,#vc-cin .vc-scan,#vc-cin .vc-glitch,#vc-cin .vc-vignette{position:absolute;inset:0;pointer-events:none}
+#vc-cin .vc-vignette{background:radial-gradient(ellipse at center,transparent 30%,#020308 78%)}
+#vc-cin .vc-scan{background:repeating-linear-gradient(to bottom,transparent 0 2px,rgba(0,0,0,.28) 2px 3px);animation:vcscan 6s linear infinite}
+#vc-cin .vc-noise{opacity:.22;background-image:radial-gradient(rgba(255,255,255,.45) .6px,transparent .6px);background-size:3px 3px;animation:vcnoise .2s steps(2) infinite}
+#vc-cin .vc-glitch{opacity:0;background:repeating-linear-gradient(180deg,transparent 0 10px,rgba(255,50,30,.25) 10px 11px,transparent 11px 22px,rgba(80,170,255,.22) 22px 23px);mix-blend-mode:screen}
+#vc-cin.hot .vc-glitch{opacity:.85;animation:vcglitch .28s steps(2) infinite}
+#vc-cin .vc-top{position:absolute;top:18px;left:22px;right:120px;display:flex;justify-content:space-between;gap:12px;font-size:11px;letter-spacing:.18em;color:#9a8b78;z-index:2}
+#vc-cin .vc-mid{position:relative;z-index:2;margin-bottom:18px}
+#vc-cin #vc-kicker{font-size:11px;letter-spacing:.28em;color:#ff9a4a}
+#vc-cin #vc-title{font-size:clamp(28px,6vw,64px);line-height:.95;letter-spacing:.04em;color:#f4efe6;text-shadow:0 0 24px rgba(255,80,40,.35);margin:8px 0 0;max-width:16ch}
+#vc-cin .vc-sub{position:relative;z-index:2;max-width:640px}
+#vc-cin .who{color:#ff9a4a;font-size:11px;letter-spacing:.22em;margin-bottom:8px}
+#vc-cin #vc-cin-text{font-size:clamp(16px,2.4vw,22px);line-height:1.45;min-height:4.4em;text-shadow:0 2px 16px #000}
+#vc-cin .vc-bar{margin-top:16px;height:2px;background:#2a241c;border-radius:2px;overflow:hidden}
+#vc-cin .vc-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff6b2d,#ffd27a)}
+#vc-cin .skip{position:absolute;top:14px;right:14px;z-index:3;background:#1a120c;color:#ffd7b0;border:1px solid #6a4030;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:700}
+#vc-boot .primary{font-size:15px;letter-spacing:.04em}
+@keyframes vcscan{from{transform:translateY(0)}to{transform:translateY(8px)}}
+@keyframes vcnoise{to{transform:translate(-2px,1px)}}
+@keyframes vcglitch{0%{transform:translate(0,0)}40%{transform:translate(-10px,3px)}70%{transform:translate(8px,-4px)}100%{transform:translate(0,0)}}
+
+</style>
+<link rel="manifest" href="data:application/manifest+json,{"name":"VOIDCROWN","short_name":"Voidcrown","start_url":".","display":"standalone","background_color":"#05070c","theme_color":"#ff6b2d","description":"El mapa que no olvida"}" />
+<meta name="theme-color" content="#ff6b2d"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+</head>
+<body>
+
+<div id="vc-boot">
+  <h1>VOIDCROWN</h1>
+  <div class="tagline">El Viejo de Santa Cristina va a recordar a MDFLACKO, a LEGIÓN CISC y a esa teoría estúpida del caos que resultó cierta. Toca. Si no oyes nada, igual entras.</div>
+  <button class="primary" onclick="vcStart('cin')">OÍR AL VIEJO</button>
+  <button class="ghost" onclick="vcStart('play')">ENTRAR AL MUNDO</button>
+  <div class="mini">Si la pantalla negra no se quita, ENTRAR AL MUNDO la rompe. La voz es del Viejo. Paranoico. Con razón.</div>
+</div>
+<div id="vc-cin">
+  <div class="vc-vignette"></div>
+  <div class="vc-scan"></div>
+  <div class="vc-noise"></div>
+  <div class="vc-glitch"></div>
+  <button class="skip" onclick="vcEndCin(true)">SALTAR · ENTRAR</button>
+  <div class="vc-top"><span id="vc-year">—</span><span>EL VIEJO · TRANSMISIÓN ROTA</span></div>
+  <div class="vc-mid"><div id="vc-kicker">RECUERDO</div><h2 id="vc-title"></h2></div>
+  <div class="vc-sub"><div class="who">VOZ DEL VIEJO</div><div id="vc-cin-text"></div><div class="vc-bar"><i id="vc-bar"></i></div></div>
+</div>
+<audio id="vc-voice" preload="auto"></audio>
+<button type="button" id="btn-canal" onclick="toggleCanal()">📡 CANAL LEGIÓN</button>
+<div id="canal-legion">
+  <h4>📡 CANAL LEGIÓN · receptor de guerra</h4>
+  <div id="canal-msgs"></div>
+  <input id="canal-in" placeholder="Escribe al canal (citas, amenazas, pedidos)…" onkeydown="if(event.key==='Enter')canalSend()"/>
+  <button onclick="canalSend()">Enviar al fantasma</button>
+  <div style="font-size:10px;color:#686;margin-top:6px">Esto era el “bot” de afuera. Aquí contesta el mundo. No diagnostica. No inventa citas reales. Si no sabe: escala.</div>
+</div>
+
+<div id="boot">
+  <h1>VOIDCROWN</h1>
+  <p>VOIDCROWN · MAX 6.0</p>
+  <p style="margin-top:10px;font-size:10px;opacity:.55">Risk · Living · Solar · Smash · Fase1 · Consolidated</p>
+</div>
+
+<div class="hud">
+  <div class="top">
+    <div class="chip solar" id="chip-mode">SISTEMA SOLAR</div>
+    <div class="chip lod" id="chip-lod">LOD PLANETA</div>
+    <div class="chip" id="chip-turn">TURNO —</div>
+    <div class="chip" id="chip-chaos">CAOS 0</div>
+    <div class="chip ok" id="chip-ap">AP —</div>
+    <div class="chip" id="chip-ret">RET 0/20</div>
+    <div class="chip" id="chip-check">CHECK —</div>
+    <div class="chip" id="chip-doctrine">DOC —</div>
+    <div class="chip" id="chip-regions">CONT —</div>
+    <div class="chip" id="chip-streak">RACHA 0</div>
+    <div class="chip hot" id="chip-threat">AMENAZA —</div>
+  </div>
+
+  <div class="mode-bar p">
+    <button id="btn-solar" class="solar">☉ SISTEMA</button>
+    <button id="btn-earth" class="primary">🌍 TIERRA</button>
+    <button id="btn-smash" class="smash lab-only">💥 SOLAR SMASH</button>
+    <button id="btn-lab" class="ghost">LAB</button>
+    <button id="btn-cluster" class="ghost">⚡ Cluster (opt-in)</button>
+    <button id="btn-arsenal" class="ghost">⚔ ARSENAL</button>
+    <button id="btn-codex" class="ghost">📖 CÓDEX</button>
+  </div>
+
+  <div class="arsenal g p" id="arsenal-panel">
+    <h2>ARSENAL DRIVE · ACOPLADO</h2>
+    <div id="arsenal-list"></div>
+  </div>
+  <div class="arsenal g p" id="codex-panel">
+    <h2>CÓDEX · MÉTODO + NARRACIÓN</h2>
+    <div class="codex-box" id="codex-body"></div>
+  </div>
+
+
+  <div id="banner" class="banner"></div>
+  <div id="sel-line" style="font-size:10px;color:#9aacc4;margin:2px 0 4px">Nodo: —</div>
+    <div class="lod-hint" id="lod-hint">Zoom LOD · Teclas: E Tierra · S Sol · M Smash · T Turno · A Atacar · R Refuerzo · P Fenómeno</div>
+
+  <div class="ops g p" id="ops-panel">
+    <h1>VOIDCROWN · LEGIÓN Ω</h1>
+    <div class="sub">RISK · SMASH · LIVING · FENÓMENOS</div>
+    <div class="fac-line">BIOTA <strong id="fac-biota" style="color:#3dce7a">0</strong> · CICATRICES <strong id="fac-scars" style="color:#ff8a3d">0</strong> · GEN <strong id="fac-gen" style="color:#c070ff">1</strong></div>
+    <div class="fac-line" id="diary-line">Diario: el mapa todavía no ha sangrado.</div>
+    <div class="row" style="margin-top:8px">
+      <button id="a-survey">📡 SONDA</button>
+      <button id="a-sample">🧬 SAMPLE</button>
+      <button id="a-seed">🌱 SEED</button>
+    </div>
+    <div class="row">
+      <button id="a-phen" class="phen">🌪 FENÓMENO</button>
+      <button id="a-fenix" class="ghost" style="border-color:rgba(61,206,122,.45);color:#3dce7a">🜂 FÉNIX</button>
+      <button id="a-void" class="ghost" style="border-color:rgba(180,80,255,.5);color:#c070ff">◈ VOID</button>
+    </div>
+    <div class="row">
+      <button id="a-kill" class="ghost" style="border-color:rgba(255,40,40,.6);color:#ff5050">⏹ KILL</button>
+      <button id="a-rebuild" class="ghost" style="border-color:rgba(61,206,122,.55);color:#7dffa8">⚒ RECONSTRUIR</button>
+      <button id="a-candidate" class="ghost">◈ CANDIDATE</button>
+      <button id="a-mute" class="ghost">🔊 AUDIO</button>
+      <button id="a-estado" class="ghost">📊 ESTADO</button>
+      <button id="a-nucleus" class="primary">◆ NÚCLEO</button>
+      <button id="a-reflejo" class="danger">👁 EXPEDIENTE</button>
+      <button id="a-aeo" class="ghost">🧬 ORGANISMO</button>
+      <button id="a-evolve" class="ghost">⬆ EVOLUCIONAR</button>
+    </div>
+    <div class="row">
+      <button id="a-vivo" class="ghost">⚡ VIVO</button>
+      <button id="a-legion" class="ghost">Legión</button>
+      <button id="a-classic" class="ghost">CLÁSICO</button>
+      <button id="a-texevo" class="ghost">🌍 TEX+</button>
+    </div>
+    <div class="row" style="margin-top:6px;flex-wrap:wrap">
+      <input id="guide-input" type="text" placeholder="Guía al Director: más caos, espectáculo, calma…" maxlength="120"
+        style="flex:1;min-width:140px;background:#0a1018;border:1px solid #2a3548;color:#e8eef8;border-radius:8px;padding:6px 8px;font-size:11px"/>
+      <button id="btn-guide" class="primary">🎙 GUIAR</button>
+    </div>
+    <div class="row" style="margin-top:4px">
+      <button class="ghost guide-chip" data-g="más daño y espectáculo">💥 daño</button>
+      <button class="ghost guide-chip" data-g="más caos">🌀 caos</button>
+      <button class="ghost guide-chip" data-g="calma y supervivencia">🛡 calma</button>
+      <button class="ghost guide-chip" data-g="explorar el mundo">🧭 explorar</button>
+    </div>
+    <div id="log"></div>
+  </div>
+
+  <div class="bottom p" id="risk-bar">
+    <button id="btn-end" class="primary">TERMINAR TURNO</button>
+    <button id="btn-reinforce">REFUERZO</button>
+    <button id="btn-attack" class="danger">ATACAR</button>
+    <button id="btn-fortify">FORTIFICAR</button>
+    <button id="btn-export-mem" class="ghost">⬇ MEM</button>
+  </div>
+  <div class="bottom p" id="smash-bar" style="display:none">
+    <button id="btn-launch" class="smash">🚀 LANZAR ASTEROIDE</button>
+    <button id="btn-smash-score" class="ghost">SCORE</button>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<canvas id="c"></canvas>
+
+<script type="importmap">
+{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
+
+const BUILD = "12.1.0-UNICO-VIVO";
+const CHECK_STATUS = "CANDIDATE"; // 4.6 full-absorb systems present; QA visual pendiente // Fase 1 smoke + systems present; human visual QA pending full VERIFICADO
+const GRIETAS_DOCTRINE = "ACTIVAS_EN_CAP_I"; // Decisión formal: grietas = cicatrices del mundo que recuerda (no portal inmediato a otros universos). METODO_VIVO adaptado.
+const $ = id => document.getElementById(id);
+const logEl = $("log"), toastEl = $("toast"), bannerEl = $("banner");
+
+function pushLog(msg){ logEl.innerHTML = `<div>[${new Date().toLocaleTimeString()}] ${msg}</div>` + logEl.innerHTML; }
+function toast(msg, ms=2800){ toastEl.textContent=msg; toastEl.classList.add("show"); setTimeout(()=>toastEl.classList.remove("show"),ms); }
+function showBanner(text, type="warn", ms=4500){
+  bannerEl.textContent=text; bannerEl.className="banner "+type;
+  if(ms) setTimeout(()=>{ bannerEl.style.display="none"; }, ms);
+}
+
+// AUDIO
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let actx=null, master=null, muted=false;
+function ensureAudio(){
+  if(!actx){ actx=new AudioCtx(); master=actx.createGain(); master.gain.value=.35; master.connect(actx.destination); }
+  if(actx.state==="suspended") actx.resume();
+}
+function beep(freq,dur,type="sine",vol=.08,delay=0){
+  if(muted) return; ensureAudio();
+  const t0=actx.currentTime+delay;
+  const o=actx.createOscillator(), g=actx.createGain();
+  o.type=type; o.frequency.setValueAtTime(freq,t0);
+  g.gain.setValueAtTime(0,t0); g.gain.linearRampToValueAtTime(vol,t0+.01);
+  g.gain.exponentialRampToValueAtTime(.001,t0+dur);
+  o.connect(g); g.connect(master); o.start(t0); o.stop(t0+dur+.05);
+}
+function noiseBurst(dur=.3, vol=.12, filterFreq=800){
+  if(muted) return; ensureAudio();
+  const len=Math.floor(actx.sampleRate*dur);
+  const buf=actx.createBuffer(1,len,actx.sampleRate);
+  const d=buf.getChannelData(0);
+  for(let i=0;i<len;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/len,1.4);
+  const src=actx.createBufferSource(), f=actx.createBiquadFilter(), g=actx.createGain();
+  f.type="lowpass"; f.frequency.value=filterFreq;
+  g.gain.value=vol; src.buffer=buf; src.connect(f); f.connect(g); g.connect(master);
+  src.start();
+}
+function sfx(kind){
+  if(muted) return; ensureAudio();
+  switch(kind){
+    case "boot": beep(110,.4,"sawtooth",.06); beep(220,.3,"sine",.05,.15); beep(440,.5,"sine",.04,.35); break;
+    case "select": beep(660,.08,"sine",.06); break;
+    case "conquer": beep(180,.15,"square",.07); beep(360,.2,"sine",.05,.12); noiseBurst(.2,.1,600); break;
+    case "fail": beep(90,.25,"sawtooth",.07); break;
+    case "phen": noiseBurst(.5,.14,400); beep(55,.6,"sawtooth",.05); beep(80,.4,"triangle",.04,.2); break;
+    case "firetornado": noiseBurst(.7,.16,300); beep(70,.8,"sawtooth",.06); beep(140,.5,"sawtooth",.04,.3); beep(200,.3,"square",.03,.5); break;
+    case "meteor": noiseBurst(.35,.15,900); beep(40,.5,"sine",.08); beep(120,.2,"square",.05,.25); break;
+    case "solar": beep(30,.9,"sine",.07); noiseBurst(.6,.1,200); break;
+    case "smash": noiseBurst(.4,.18,700); beep(50,.3,"square",.09); beep(100,.15,"sawtooth",.06,.15); break;
+    case "zoom": beep(400+Math.random()*200,.06,"sine",.03); break;
+    case "rift": beep(40,.8,"sawtooth",.06); beep(60,.5,"triangle",.04,.2); noiseBurst(.4,.08,150); break;
+    case "turn": beep(520,.07,"sine",.04); break;
+  }
+}
+$("reflejo-close")&&($("reflejo-close").onclick=hideReflejo);
+if($("a-nucleus")) $("a-nucleus").onclick=nucleusStatus;
+
+$("a-reflejo")&&($("a-reflejo").onclick=()=>showReflejo(true));
+$("a-aeo").onclick=()=>{ if(typeof aeoStatusDump==="function") aeoStatusDump(); };
+$("a-evolve").onclick=()=>{
+  if(typeof aeoBuildRule==="function") aeoBuildRule();
+  if(typeof aeoBuildOrgan==="function" && Math.random()<0.6) aeoBuildOrgan();
+  if(typeof aeoPulse==="function") aeoPulse();
+  toast("Evolución forzada");
+};
+$("a-estado").onclick=()=>{
+  const p=Object.values(W.nodes).filter(n=>n.owner==="player").length;
+  const e=Object.values(W.nodes).filter(n=>n.owner==="edai").length;
+  const scars=Object.values(W.nodes).reduce((s,n)=>s+(n.scars||0),0);
+  const biota=Object.values(W.living.forms||{}).reduce((s,f)=>s+(f.population||0),0);
+  const msg=`Turno ${W.turn} · Tú ${p} · EDAI ${e} · Caos ${W.chaos} · Cicatrices ${scars} · Biota ${biota} · Racha ${W.streak||0} · Smash ${W.smashScore||0}`;
+  pushLog("📊 "+msg); toast(msg); showBanner(msg,"warn",5000);
+};
+$("a-mute").onclick=()=>{ muted=!muted; $("a-mute").textContent=muted?"🔇 MUTE":"🔊 AUDIO"; toast(muted?"Audio off":"Audio on"); };
+
+// WORLD
+const MIND_KEY="voidcrown_mind_gen_v1", FENIX_KEY="voidcrown_fenix_v43", RET_KEY="voidcrown_retention_v1";
+const NODES=[
+  {id:"dc",name:"Washington",lat:38.9,lon:-77,region:"na",country:"USA",city:"Washington DC"},
+  {id:"mexico",name:"Ciudad de México",lat:19.4,lon:-99.1,region:"na",country:"México",city:"CDMX"},
+  {id:"brasilia",name:"Brasilia",lat:-15.8,lon:-47.9,region:"na",country:"Brasil",city:"Brasilia"},
+  {id:"buenos",name:"Buenos Aires",lat:-34.6,lon:-58.4,region:"na",country:"Argentina",city:"Buenos Aires"},
+  {id:"london",name:"Londres",lat:51.5,lon:-0.1,region:"eu",country:"UK",city:"London"},
+  {id:"paris",name:"París",lat:48.9,lon:2.3,region:"eu",country:"Francia",city:"Paris"},
+  {id:"berlin",name:"Berlín",lat:52.5,lon:13.4,region:"eu",country:"Alemania",city:"Berlin"},
+  {id:"moscow",name:"Moscú",lat:55.8,lon:37.6,region:"eu",country:"Rusia",city:"Moscow"},
+  {id:"kyiv",name:"Kiev",lat:50.5,lon:30.5,region:"eu",country:"Ucrania",city:"Kyiv"},
+  {id:"istanbul",name:"Estambul",lat:41.0,lon:29.0,region:"eu",country:"Turquía",city:"Istanbul"},
+  {id:"cairo",name:"El Cairo",lat:30.0,lon:31.2,region:"af",country:"Egipto",city:"Cairo"},
+  {id:"lagos",name:"Lagos",lat:6.5,lon:3.4,region:"af",country:"Nigeria",city:"Lagos"},
+  {id:"riyadh",name:"Riad",lat:24.7,lon:46.7,region:"af",country:"Arabia S.",city:"Riyadh"},
+  {id:"baghdad",name:"Bagdad",lat:33.3,lon:44.4,region:"af",country:"Irak",city:"Baghdad"},
+  {id:"jerusalem",name:"Jerusalén",lat:31.8,lon:35.2,region:"af",country:"Israel",city:"Jerusalem"},
+  {id:"pretoria",name:"Pretoria",lat:-25.7,lon:28.2,region:"af",country:"Sudáfrica",city:"Pretoria"},
+  {id:"tehran",name:"Teherán",lat:35.7,lon:51.4,region:"as",country:"Irán",city:"Tehran"},
+  {id:"delhi",name:"Delhi",lat:28.6,lon:77.2,region:"as",country:"India",city:"Delhi"},
+  {id:"beijing",name:"Pekín",lat:39.9,lon:116.4,region:"as",country:"China",city:"Beijing"},
+  {id:"seoul",name:"Seúl",lat:37.6,lon:127.0,region:"as",country:"Corea S.",city:"Seoul"},
+  {id:"tokyo",name:"Tokio",lat:35.7,lon:139.7,region:"as",country:"Japón",city:"Tokyo"},
+  {id:"singapore",name:"Singapur",lat:1.3,lon:103.8,region:"as",country:"Singapur",city:"Singapore"},
+  {id:"sydney",name:"Sídney",lat:-33.9,lon:151.2,region:"as",country:"Australia",city:"Sydney"}
+];
+const CLAMP=v=>Math.max(0,Math.min(1,v));
+function blankGenome(){return{acid:.3,heat:.4,radiation:.2,pressure:.5,social:.5,synthetic:.1};}
+function mutateGenome(g,s=.05){const j=()=>(Math.random()-.5)*2*s;return{acid:CLAMP(g.acid+j()),heat:CLAMP(g.heat+j()),radiation:CLAMP(g.radiation+j()),pressure:CLAMP(g.pressure+j()),social:CLAMP(g.social+j()),synthetic:CLAMP(g.synthetic+j())};}
+function seedLiving(){const forms={};NODES.forEach(n=>{forms[n.id]={population:8+Math.floor(Math.random()*22),genome:blankGenome(),scars:0,age:0};});return{forms,sporeBank:{},lastTick:0};}
+
+// ═══ ABSORB from 4.1.0 — Risk profundo + living selection ═══
+const DOCTRINE = {
+  NORMAL: { chaosGain:1, reinfMod:0, label:"NORMAL" },
+  AUSTERIDAD: { chaosGain:0.7, reinfMod:-1, label:"AUSTERIDAD" },
+  RESCATE: { chaosGain:1.3, reinfMod:1, label:"RESCATE" }
+};
+const REGIONS = {
+  na: { id:"na", name:"Américas", bonus:3, nodes:["dc","mexico","brasilia","buenos"] },
+  eu: { id:"eu", name:"Europa", bonus:3, nodes:["london","paris","berlin","moscow","kyiv","istanbul"] },
+  af: { id:"af", name:"África-MENA", bonus:3, nodes:["cairo","lagos","riyadh","baghdad","jerusalem","pretoria"] },
+  as: { id:"as", name:"Asia-Pacífico", bonus:4, nodes:["tehran","delhi","beijing","seoul","tokyo","singapore","sydney"] }
+};
+function ownedInRegion(w, regionId, fid){
+  const r = REGIONS[regionId]; if(!r) return 0;
+  return r.nodes.filter(id => w.nodes[id] && w.nodes[id].owner === fid).length;
+}
+function controlsRegion(w, regionId, fid){
+  const r = REGIONS[regionId]; if(!r) return false;
+  return r.nodes.every(id => w.nodes[id] && w.nodes[id].owner === fid);
+}
+function regionBonus(w, fid){
+  let b = 0;
+  Object.keys(REGIONS).forEach(rid => { if(controlsRegion(w, rid, fid)) b += REGIONS[rid].bonus; });
+  return b;
+}
+
+function pickPlayerNode(preferStrong){
+  const mine=Object.values(W.nodes).filter(n=>n.owner==="player");
+  if(!mine.length) return null;
+  if(W.selected && W.nodes[W.selected] && W.nodes[W.selected].owner==="player") return W.nodes[W.selected];
+  mine.sort((a,b)=> preferStrong ? (b.armies-a.armies) : (a.armies-b.armies));
+  return mine[0];
+}
+function inspectNode(nid){
+  const n=W.nodes[nid]; if(!n) return;
+  W.selected=nid;
+  const f=W.living&&W.living.forms[nid];
+  const lines=[
+    n.name+" · "+(n.country||"")+" · "+(n.city||""),
+    "Dueño: "+(n.owner==="player"?"TÚ":"EDAI")+" · Ejércitos: "+n.armies,
+    "Estabilidad: "+(n.stability||0)+" · Cicatrices: "+(n.scars||0)+" · Grietas: "+(n.voidcrack||0),
+    f?("Biota: "+f.population+" · Scars bio: "+(f.scars||0)):"Sin forma viva",
+  ];
+  if(f&&f.genome){
+    const g=f.genome;
+    lines.push("Genoma heat:"+((g.heat||0).toFixed?g.heat.toFixed(2):g.heat)+" rad:"+((g.radiation||0).toFixed?Number(g.radiation).toFixed(2):g.radiation));
+  }
+  pushLog("📍 "+lines.join(" | "));
+  toast(n.name+" · "+(n.owner==="player"?"TÚ":"EDAI")+" · ✖"+n.armies);
+  showBanner(lines[0]+" — "+lines[1], n.owner==="player"?"warn":"danger", 3500);
+  updateHUD();
+  if(gameMode==="earth") rebuildLOD();
+}
+
+function calcReinforcements(w, fid){
+  const n = Object.values(w.nodes).filter(node => node.owner===fid).length;
+  let r = Math.max(3, Math.floor(n/3)) + regionBonus(w, fid);
+  const doc = DOCTRINE[w.doctrine||"NORMAL"] || DOCTRINE.NORMAL;
+  r = Math.max(3, r + (doc.reinfMod||0));
+  if(w._solarPenalty){ r = Math.max(3, r - w._solarPenalty); w._solarPenalty = 0; }
+  return r;
+}
+function checkWinner(w){
+  const total = Object.keys(w.nodes).length;
+  const p = Object.values(w.nodes).filter(n=>n.owner==="player").length;
+  const e = Object.values(w.nodes).filter(n=>n.owner==="edai").length;
+  const pCont = Object.keys(REGIONS).filter(r => controlsRegion(w, r, "player")).length;
+  const eCont = Object.keys(REGIONS).filter(r => controlsRegion(w, r, "edai")).length;
+  if(p >= Math.ceil(total*0.7) || pCont >= 2) w.winner = "player";
+  if(e >= Math.ceil(total*0.7) || eCont >= 2) w.winner = "edai";
+  return w;
+}
+function applyLifeCatastrophe(living, nodeId, severity, regionId){
+  if(!living || !living.forms || !living.forms[nodeId]) return { living, logs:[] };
+  const logs = [];
+  const f = { ...living.forms[nodeId] };
+  const kill = Math.floor((f.population||0) * (0.25 + severity*0.4));
+  f.population = Math.max(0, (f.population||0) - kill);
+  f.scars = (f.scars||0) + 1;
+  f.genome = mutateGenome(f.genome || blankGenome(), 0.06 + severity*0.12);
+  // selection: survivors get slight heat/radiation adaptation
+  if(severity > 0.5){
+    f.genome.heat = CLAMP((f.genome.heat||0.4) + 0.05);
+    f.genome.radiation = CLAMP((f.genome.radiation||0.2) + 0.04);
+    logs.push(`Selección en ${nodeId}: genoma adaptado tras catástrofe`);
+  }
+  if(f.population === 0){
+    living.sporeBank = living.sporeBank || {};
+    living.sporeBank[nodeId] = (living.sporeBank[nodeId]||0) + 3;
+    logs.push(`Biota de ${nodeId} colapsó → esporas en banco`);
+  }
+  living.forms[nodeId] = f;
+  return { living, logs };
+}
+function edaiTurn(w){
+  const enemy = Object.values(w.nodes).filter(n=>n.owner==="edai");
+  const mine = Object.values(w.nodes).filter(n=>n.owner==="player");
+  if(!enemy.length) return checkWinner(w);
+  const agg = (loadMind().aggression||0.35);
+  const pressure = (typeof retentionFeedback==="function" ? retentionFeedback().pressure : 1) * (typeof AEO!=='undefined'&&AEO.traits?AEO.traits.edaiPressure:1) * (1+((typeof AEO!=='undefined'&&AEO._nightBoost)||0));
+  // Smart reinforce: boost frontier (nodes near player influence) or weakest
+  enemy.sort((a,b)=>a.armies-b.armies);
+  const re = enemy[0];
+  const reinf = 1 + (Math.random()<0.35*pressure?1:0) + (agg>0.6?1:0);
+  re.armies += reinf;
+  pushLog(`⚙ EDAI refuerza ${re.name} +${reinf}`);
+  const holds = !!(typeof loadMind==="function" && loadMind().edaiHolds);
+  if(holds){
+    pushLog("EDAI recuerda la derrota y no insiste en atacar.");
+    return checkWinner(w);
+  }
+  // Prefer attack on weak player nodes
+  const attackers = enemy.filter(n=>n.armies>2);
+  const targets = mine.slice().sort((a,b)=>a.armies-b.armies);
+  const attacks = (agg>0.55?2:1) + (w.chaos>70?1:0);
+  for(let i=0;i<attacks && attackers.length && targets.length;i++){
+    if(Math.random() > 0.5 + agg*0.35*pressure) break;
+    const atk = attackers[Math.floor(Math.random()*attackers.length)];
+    const def = targets[Math.min(i, targets.length-1)];
+    const rollA = Math.ceil(Math.random()*6) + Math.min(3, atk.armies-1);
+    const rollD = Math.ceil(Math.random()*6) + Math.min(2, def.armies);
+    if(rollA > rollD){
+      def.owner = "edai";
+      def.armies = Math.max(1, Math.floor(def.armies/2));
+      atk.armies = Math.max(1, atk.armies-1);
+      def.scars = (def.scars||0)+1;
+      if(w.living && w.living.forms[def.id]) w.living.forms[def.id].scars = (w.living.forms[def.id].scars||0)+1;
+      pushLog(`⚔ EDAI toma ${def.name} (${rollA} vs ${rollD})`);
+      if(typeof worldRemembers==="function") worldRemembers(def,"ofensiva EDAI",0.55);
+      if(typeof edaiNote==="function") edaiNote(true);
+      if(typeof vcMissionTick==="function") vcMissionTick({type:"lose_node", nodeName:def.name});
+      if(typeof sfx==="function") sfx("fail");
+      w.chaos = Math.min(100, (w.chaos||0)+3);
+    } else {
+      atk.armies = Math.max(1, atk.armies-1);
+      pushLog(`⚔ EDAI rechazado en ${def.name}`);
+      if(typeof edaiNote==="function") edaiNote(false);
+      if(typeof vcMissionTick==="function") vcMissionTick({type:"edai_fail", nodeName:def.name});
+    }
+  }
+  // EDAI may trigger phen if chaos high
+  if(w.chaos>65 && Math.random()<0.2*pressure && typeof spawnPhenomenon==="function"){
+    pushLog("◈ EDAI fuerza inestabilidad global");
+    spawnPhenomenon();
+  }
+  return checkWinner(w);
+}
+function fortifyAction(){
+  if(W.ap<=0){ toast("Sin AP"); return; }
+  const mine = Object.values(W.nodes).filter(n=>n.owner==="player" && n.armies>1);
+  if(mine.length<2){ toast("Necesitas 2 nodos propios"); return; }
+  const from = mine[Math.floor(Math.random()*mine.length)];
+  const to = mine.filter(n=>n.id!==from.id)[Math.floor(Math.random()*(mine.length-1))];
+  if(!to) return;
+  from.armies--; to.armies++;
+  W.ap--;
+  pushLog(`Fortificar ${from.name} → ${to.name}`);
+  toast(`Fortificado ${to.name}`);
+  updateHUD();
+  if(typeof sfx==="function") sfx("select");
+}
+function exportMemory(){
+  const payload = {
+    build: BUILD,
+    world: W,
+    mind: loadMind(),
+    retention: loadRet(),
+    exportedAt: Date.now()
+  };
+  const blob = new Blob([JSON.stringify(payload,null,2)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `voidcrown_memory_${Date.now()}.json`;
+  a.click();
+  toast("Memoria exportada");
+  pushLog("⬇ MEM exportada (world+mind+retention)");
+}
+function doctrineTick(w){
+  if((w.chaos||0) >= 70) w.doctrine = "RESCATE";
+  else if((w.chaos||0) >= 40) w.doctrine = "AUSTERIDAD";
+  else w.doctrine = "NORMAL";
+  return w;
+}
+
+
+function loadMind(){try{const r=localStorage.getItem(MIND_KEY);if(!r)return{generation:1,graves:[],aggression:.35,notes:[]};return Object.assign({generation:1,graves:[],aggression:.35,notes:[]},JSON.parse(r));}catch(e){return{generation:1,graves:[],aggression:.35,notes:[]};}}
+function saveMind(m){try{localStorage.setItem(MIND_KEY,JSON.stringify(m));}catch(e){}}
+function loadRet(){
+  try{
+    const r=JSON.parse(localStorage.getItem(RET_KEY)||'{}');
+    return Object.assign({games:0,last:0,wins:0,losses:0,phenCount:0,patches:0,notes:[]}, r);
+  }catch(e){return{games:0,last:0,wins:0,losses:0,phenCount:0,patches:0,notes:[]};}
+}
+function saveRet(r){try{localStorage.setItem(RET_KEY,JSON.stringify(r));}catch(e){}}
+function bumpRet(){
+  const r=loadRet();
+  r.games=(r.games||0)+1;
+  r.last=Date.now();
+  if(r.games===5) r.notes=[...(r.notes||[]),"Jugador recurrente x5 — Director sube presión"].slice(-12);
+  if(r.games===10) r.notes=[...(r.notes||[]),"Retención x10 — fusiones más probables"].slice(-12);
+  if(r.games===20) r.notes=[...(r.notes||[]),"HIT 20 PARTIDAS — Director en modo agresivo"].slice(-12);
+  saveRet(r);
+  return r;
+}
+function retentionFeedback(){
+  const r=loadRet();
+  if(r.games>=20) return {pressure:1.35, fusionBonus:0.2, label:"AGRESIVO"};
+  if(r.games>=10) return {pressure:1.2, fusionBonus:0.12, label:"ALTO"};
+  if(r.games>=5) return {pressure:1.1, fusionBonus:0.05, label:"MEDIO"};
+  return {pressure:1.0, fusionBonus:0, label:"BASE"};
+}
+
+function makeWorld(){
+  const nodes={};
+  NODES.forEach((n,i)=>{nodes[n.id]={...n,owner:i%3===0?"player":"edai",armies:2+Math.floor(Math.random()*4),stability:40+Math.floor(Math.random()*40),scars:0,voidcrack:0};});
+  ["dc","mexico","london","paris","cairo"].forEach(id=>{if(nodes[id]){nodes[id].owner="player";nodes[id].armies=5;}});
+  ["beijing","tokyo","moscow"].forEach(id=>{if(nodes[id]){nodes[id].owner="edai";nodes[id].armies=5;}});
+  return{
+    turn:1,ap:5,chaos:10,voidCracks:0,doctrine:"NORMAL",
+    nodes,living:seedLiving(),ledger:[],phenomena:[],winner:null,selected:null,smashScore:0,
+    streak:0, echo:null, iceberg:0, dayPhase:0.3, autoSave:true,
+    threatForecast:null, loreUnlocked:[],
+    diary:(()=>{try{return (loadMind().diary||[]).slice();}catch(e){return [];}})(),
+    cycle:1, actClosed:false
+  };
+}
+const LORE_ICEBERG = [
+  "El mapa ya no empieza de cero.",
+  "Flacko no jugaba para ganar. Jugaba para ver qué pasaba.",
+  "Cuando un juego recuerda cómo lo engañaste…",
+  "La primera grieta no la abrimos nosotros.",
+  "LEGIÓN eligió su nombre.",
+  "Detrás de la nave había miles de mundos.",
+  "Por fin llegaron.",
+  "Turno de MDFLACKO.",
+  "La caja se cerró. La pregunta se quedó afuera.",
+  "¿Por qué me borraron?",
+  "EDAI no odia. Calcula.",
+  "Cada cicatriz es una teoría que sobrevivió.",
+  "El Viejo no cuenta el final. Solo el siguiente turno.",
+  "Hay tableros donde nunca naciste. El nombre igual aparece.",
+  "VOIDCROWN no es un lugar. Es lo que queda cuando el reset falla."
+];
+function autoSaveWorld(){
+  if(!W || W.autoSave===false) return;
+  try{ localStorage.setItem("voidcrown_autosave_v47", JSON.stringify({t:Date.now(), W, mind:loadMind()})); }catch(e){}
+}
+function tryLoadAutoSave(){
+  try{
+    const r=localStorage.getItem("voidcrown_autosave_v47");
+    if(!r) return false;
+    const d=JSON.parse(r);
+    if(d && d.W && d.W.nodes){ W=d.W; if(d.mind) saveMind(d.mind); return true; }
+  }catch(e){}
+  return false;
+}
+function unlockLore(){
+  W.iceberg = (W.iceberg||0)+1;
+  const line = LORE_ICEBERG[Math.min(W.iceberg-1, LORE_ICEBERG.length-1)];
+  if(line && !(W.loreUnlocked||[]).includes(line)){
+    W.loreUnlocked = [...(W.loreUnlocked||[]), line];
+    pushLog("❄ ICEBERG: "+line);
+    showBanner("❄ "+line, "warn", 5000);
+  }
+}
+function forecastThreat(){
+  if(W.chaos>70) W.threatForecast = "ALTO · fusión probable";
+  else if(W.chaos>40) W.threatForecast = "MEDIO · fenómeno en 1-2 turnos";
+  else W.threatForecast = "BAJO · calma relativa";
+  return W.threatForecast;
+}
+
+let W=makeWorld(), mind=loadMind(), retention=bumpRet();
+let gameMode="solar", lodLevel=0;
+
+function appendLedger(type,detail){
+  const prev=W.ledger.length?W.ledger[W.ledger.length-1].hash:"GENESIS";
+  const raw=prev+type+detail+Date.now();let h=0x811c9dc5;
+  for(let i=0;i<raw.length;i++){h^=raw.charCodeAt(i);h=Math.imul(h,0x01000193);}
+  W.ledger.push({type,detail,t:Date.now(),hash:(h>>>0).toString(16),prev});
+  if(W.ledger.length>80)W.ledger=W.ledger.slice(-80);
+}
+
+// PHENOMENA
+const PHEN_TYPES=[
+  {id:"volcano",name:"Volcán",icon:"🌋",space:false,fusion:false},
+  {id:"tornado",name:"Tornado",icon:"🌪",space:false,fusion:false},
+  {id:"quake",name:"Terremoto",icon:"🌍",space:false,fusion:false},
+  {id:"flood",name:"Inundación",icon:"🌊",space:false,fusion:false},
+  {id:"blizzard",name:"Ventisca",icon:"❄",space:false,fusion:false},
+  {id:"plague",name:"Plaga",icon:"☣",space:false,fusion:false},
+  {id:"meteor",name:"Meteorito",icon:"☄",space:true,fusion:false},
+  {id:"solarflare",name:"Llamarada solar",icon:"☀",space:true,fusion:false},
+  {id:"comet",name:"Cometa",icon:"💫",space:true,fusion:false},
+  {id:"firetornado",name:"Tornado de fuego",icon:"🔥",space:false,fusion:true},
+  {id:"voidstorm",name:"Tormenta Void",icon:"◈",space:true,fusion:true},
+  {id:"ashfall",name:"Lluvia de ceniza",icon:"🌫",space:false,fusion:true}
+];
+let activePhen=[];
+const phenMarkers=[];
+
+function diary(line){
+  if(!W.diary) W.diary=[];
+  W.diary.push({t:Date.now(), turn:W.turn||0, line});
+  if(W.diary.length>80) W.diary=W.diary.slice(-80);
+  try{
+    const m=loadMind();
+    m.diary=W.diary.slice(-40);
+    saveMind(m);
+    mind=m;
+  }catch(e){}
+}
+function edaiNote(won){
+  const m=loadMind();
+  m.edaiWins=(m.edaiWins||0)+(won?1:0);
+  m.edaiLosses=(m.edaiLosses||0)+(won?0:1);
+  m.edaiRecent=[...(m.edaiRecent||[]), won?1:0].slice(-8);
+  const losses=m.edaiRecent.filter(x=>x===0).length;
+  const wins=m.edaiRecent.filter(x=>x===1).length;
+  m.edaiHolds=m.edaiRecent.length>=3 && losses>wins;
+  if(m.edaiHolds) m.notes=[...(m.notes||[]),"EDAI recuerda la derrota y no insiste"].slice(-8);
+  saveMind(m);
+  mind=m;
+  return !!m.edaiHolds;
+}
+function worldRemembers(n, cause, severity){
+  if(!n) return;
+  const sev=severity==null?0.5:severity;
+  n.hunger=(n.hunger||0)+(sev>0.55?2:1);
+  const f=W.living&&W.living.forms[n.id];
+  let fled=0, destName="";
+  if(f){
+    fled=Math.min(f.population||0, 1+Math.floor(sev*4));
+    f.population=Math.max(0,(f.population||0)-fled);
+    const destId=(n.id==="tehran"&&W.nodes.baghdad)?"baghdad":Object.keys(W.nodes).find(id=>id!==n.id);
+    if(destId&&fled>0&&W.living.forms[destId]){
+      W.living.forms[destId].population=(W.living.forms[destId].population||0)+fled;
+      destName=W.nodes[destId].name;
+      pushLog("Éxodo: "+fled+" de "+n.name+" → "+destName);
+    }
+  }
+  let rift=false;
+  if(sev>0.72 || ((W.chaos||0)>55 && Math.random()<0.28)){
+    n.voidcrack=(n.voidcrack||0)+1;
+    W.voidCracks=(W.voidCracks||0)+1;
+    rift=true;
+    showBanner("◈ Grieta en "+n.name+". Reconstruir cierra el cráter.","danger",4500);
+  }
+  const line=n.name+": cicatriz · hambre "+n.hunger+(fled?" · éxodo "+fled+"→"+destName:"")+(rift?" · grieta":"")+" · "+cause;
+  diary(line);
+  pushLog("Diario: "+line);
+}
+function rebuildSelected(){
+  if(!W||W.ap<=0){toast("Sin AP");return;}
+  const n=W.selected&&W.nodes[W.selected];
+  if(!n){toast("Elige un nodo en el globo");return;}
+  if(!(n.voidcrack||n.hunger)){toast("Nada que cerrar en "+n.name);return;}
+  W.ap--;
+  if((n.voidcrack||0)>0){
+    n.voidcrack--;
+    W.voidCracks=Math.max(0,(W.voidCracks||1)-1);
+    diary("Cráter cerrado en "+n.name+". El diario no se borra.");
+    pushLog("Reconstruir cierra el cráter de "+n.name);
+    showBanner("Cráter cerrado en "+n.name,"warn",3000);
+  }
+  n.hunger=Math.max(0,(n.hunger||0)-1);
+  n.stability=Math.min(100,(n.stability||40)+12);
+  toast("Reconstruido "+n.name);
+  sfx("select");
+  updateHUD();
+  autoSaveWorld();
+  if(gameMode==="earth") rebuildLOD();
+}
+
+function spawnPhenomenon(forcedId){
+  const pool=PHEN_TYPES.filter(p=>!p.fusion||W.chaos>(W._aeoFusion!=null?W._aeoFusion:50));
+  const p=forcedId?PHEN_TYPES.find(x=>x.id===forcedId):pool[Math.floor(Math.random()*pool.length)];
+  if(!p)return;
+  const ids=Object.keys(W.nodes);
+  const nid=ids[Math.floor(Math.random()*ids.length)];
+  const n=W.nodes[nid];
+  const severity=.4+Math.random()*.6;
+  W.chaos=Math.min(100,(W.chaos||0)+Math.floor((p.chaos||8)*severity));
+  n.scars=(n.scars||0)+1;
+  n.stability=Math.max(0,(n.stability||50)-Math.floor(15*severity));
+  if(W.living && typeof applyLifeCatastrophe==="function"){
+    const res = applyLifeCatastrophe(W.living, nid, severity, n.region);
+    W.living = res.living;
+    (res.logs||[]).forEach(l=>pushLog(l));
+  } else if(W.living && W.living.forms[nid]){
+    W.living.forms[nid].scars++;
+    W.living.forms[nid].genome=mutateGenome(W.living.forms[nid].genome,.05+severity*.1);
+    W.living.forms[nid].population=Math.max(0,Math.floor(W.living.forms[nid].population*(1-severity*.4)));
+  }
+  let fusionNote="";
+  const fb=typeof retentionFeedback==="function"?retentionFeedback():{fusionBonus:0};
+  if(p.id==="volcano"&&W.chaos>40&&Math.random()<.25){ p=PHEN_TYPES.find(x=>x.id==="ashfall")||p; }
+  if(p.id==="volcano"&&Math.random()<.35+ (fb.fusionBonus||0)){
+    fusionNote=" → FUSIÓN: Tornado de fuego";
+    sfx("firetornado");
+    showBanner(`🔥🌪 TORNADO DE FUEGO sobre ${n.name}`, "phen", 5500);
+  }else if(p.id==="meteor"&&W.chaos>60&&Math.random()<.3+(fb.fusionBonus||0)){
+    fusionNote=" → FUSIÓN: Tormenta Void";
+    sfx("rift");
+    n.voidcrack=(n.voidcrack||0)+1;W.voidCracks++;
+    showBanner(`◈ TORMENTA VOID en ${n.name}`, "danger", 5500);
+  }else{
+    sfx(p.id==="meteor"||p.id==="asteroid"?"meteor":p.id==="solarflare"?"solar":"phen");
+    showBanner(`${p.icon} ${p.name} golpea ${n.name}`, "phen", 4000);
+  }
+  const msg=`${p.icon} ${p.name} en ${n.name} (sev ${severity.toFixed(2)})${fusionNote}`;
+  pushLog(msg);appendLedger("phenomenon",msg);
+  if(typeof worldRemembers==="function") worldRemembers(n, p.name, severity);
+  if(typeof vcOnDisaster==="function") vcOnDisaster(n.name);
+  W.phenomena.push({id:p.id,node:nid,t:Date.now(),severity});
+  activePhen.push({type:p.id,nodeId:nid,life:2.5+severity*2,severity});
+  updateHUD();
+}
+
+function applyMutationPatch(patch){
+  // MutationPatch contract: {id, type, target?, payload, reason, t}
+  if(!W.patches) W.patches=[];
+  W.patches.push(patch);
+  if(W.patches.length>40) W.patches=W.patches.slice(-40);
+  appendLedger("MutationPatch", `${patch.type}:${patch.reason||""}`);
+  const r=loadRet(); r.patches=(r.patches||0)+1; saveRet(r);
+  return patch;
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// ORGANISMO VIVO — Evolución adaptativa autónoma
+// No descarga código. Evoluciona parámetros, reglas y contenido
+// como un ser que observa, aprende, muta y se construye solo.
+// ═══════════════════════════════════════════════════════════
+const AEO_KEY = "voidcrown_aeo_v9";
+const AEO_GENOME_DEFAULT = {
+  gen: 1,
+  born: Date.now(),
+  pulses: 0,
+  traits: {
+    phenRate: 0.28,      // probabilidad fenómeno al fin de turno
+    edaiPressure: 1.0,   // multiplicador presión EDAI
+    chaosGain: 1.0,      // multiplicador subida de caos
+    fusionThresh: 50,    // caos mínimo para fusiones
+    apBase: 5,
+    biotaDrift: 0.4,     // ambient biota change chance
+    loreHunger: 0.15,    // chance to emit lore autonomously
+    selfRepair: 0.9,     // probability to fix soft faults
+    curiosity: 0.5,      // explore new event templates
+    aggressionBias: 0.0  // added to EDAI mind aggression
+  },
+  memory: {
+    playerAttacks: 0,
+    playerWins: 0,
+    playerLosses: 0,
+    phenFired: 0,
+    guidesHeard: 0,
+    avgChaos: 10,
+    lastPlayerAction: "boot"
+  },
+  rules: [],       // reglas emergentes generadas
+  organs: [],      // "órganos" = módulos de comportamiento activos
+  chronicle: []    // diario del organismo
+};
+function loadAEO(){
+  try{
+    const r = JSON.parse(localStorage.getItem(AEO_KEY)||"null");
+    if(!r) return JSON.parse(JSON.stringify(AEO_GENOME_DEFAULT));
+    // merge defaults for forward compat
+    const g = JSON.parse(JSON.stringify(AEO_GENOME_DEFAULT));
+    Object.assign(g, r);
+    g.traits = Object.assign({}, AEO_GENOME_DEFAULT.traits, r.traits||{});
+    g.memory = Object.assign({}, AEO_GENOME_DEFAULT.memory, r.memory||{});
+    g.rules = r.rules || [];
+    g.organs = r.organs || [];
+    g.chronicle = r.chronicle || [];
+    return g;
+  }catch(e){ return JSON.parse(JSON.stringify(AEO_GENOME_DEFAULT)); }
+}
+function saveAEO(g){
+  try{ localStorage.setItem(AEO_KEY, JSON.stringify(g)); }catch(e){}
+}
+let AEO = loadAEO();
+
+function aeoLog(msg){
+  AEO.chronicle = (AEO.chronicle||[]).concat([{t:Date.now(), msg}]).slice(-60);
+  pushLog("🧬 AEO · "+msg);
+}
+
+function aeoObserve(action, detail){
+  AEO.memory.lastPlayerAction = action;
+  if(action==="attack") AEO.memory.playerAttacks++;
+  if(action==="win") AEO.memory.playerWins++;
+  if(action==="lose") AEO.memory.playerLosses++;
+  if(action==="phen") AEO.memory.phenFired++;
+  if(action==="guide") AEO.memory.guidesHeard++;
+  if(W) AEO.memory.avgChaos = Math.round((AEO.memory.avgChaos*0.9) + (W.chaos||0)*0.1);
+  saveAEO(AEO);
+}
+
+// Mutación segura de un rasgo (±jitter, clamped)
+function aeoMutateTrait(name, delta, min, max){
+  const v = (AEO.traits[name]||0) + delta;
+  AEO.traits[name] = Math.max(min, Math.min(max, v));
+}
+
+// El organismo se adapta al estilo del jugador
+function aeoAdapt(){
+  const m = AEO.memory;
+  const attacks = m.playerAttacks||0;
+  const guides = m.guidesHeard||0;
+  const chaos = m.avgChaos||10;
+
+  // Jugador agresivo → mundo más hostil y más fenómenos
+  if(attacks > 15 && attacks > (m.playerWins+1)*3){
+    aeoMutateTrait("edaiPressure", 0.04, 0.6, 1.8);
+    aeoMutateTrait("phenRate", 0.02, 0.1, 0.55);
+    aeoMutateTrait("aggressionBias", 0.02, -0.2, 0.4);
+  }
+  // Jugador usa guías → Director más sensible, menos caos bruto
+  if(guides > 5){
+    aeoMutateTrait("curiosity", 0.03, 0.2, 1);
+    aeoMutateTrait("chaosGain", -0.02, 0.5, 1.5);
+  }
+  // Caos medio alto sostenido → sube umbral de fusión (el mundo "endurece")
+  if(chaos > 55){
+    aeoMutateTrait("fusionThresh", 1, 30, 80);
+    aeoMutateTrait("selfRepair", 0.01, 0.5, 1);
+  }
+  // Caos muy bajo → el organismo se aburre y sube curiosidad/phen
+  if(chaos < 20 && (AEO.pulses%5===0)){
+    aeoMutateTrait("phenRate", 0.03, 0.1, 0.55);
+    aeoMutateTrait("curiosity", 0.04, 0.2, 1);
+  }
+  // Derrotas → EDAI no se duerme; victorias → el mundo exige más
+  if((m.playerLosses||0) > (m.playerWins||0) + 2){
+    aeoMutateTrait("edaiPressure", -0.03, 0.6, 1.8); // afloja un poco para no frustrar
+  }
+  if((m.playerWins||0) > (m.playerLosses||0) + 2){
+    aeoMutateTrait("edaiPressure", 0.05, 0.6, 1.8);
+    aeoMutateTrait("apBase", -0.1, 4, 7);
+  }
+}
+
+// Construye una REGLA EMERGENTE (dato, no código arbitrario)
+function aeoBuildRule(){
+  const templates = [
+    {id:"scar_tax", name:"Impuesto de cicatriz", desc:"Cada 3 cicatrices globales +1 caos al turno", apply:"scar_tax"},
+    {id:"biota_shield", name:"Escudo biótico", desc:"Nodos con biota>8 resisten mejor", apply:"biota_shield"},
+    {id:"night_raid", name:"Incursión nocturna", desc:"De noche EDAI ataca más", apply:"night_raid"},
+    {id:"echo_law", name:"Ley del eco", desc:"Los ecos duran +1 turno", apply:"echo_law"},
+    {id:"fusion_hunger", name:"Hambre de fusión", desc:"Fusiones más probables", apply:"fusion_hunger"},
+    {id:"guide_tide", name:"Marea de guías", desc:"Cada guía reduce caos en 2", apply:"guide_tide"},
+    {id:"continent_pride", name:"Orgullo continental", desc:"Bonus de continente +1", apply:"continent_pride"},
+    {id:"void_whisper", name:"Susurro void", desc:"Grietas pueden sanar biota rara vez", apply:"void_whisper"}
+  ];
+  const existing = new Set((AEO.rules||[]).map(r=>r.id));
+  const pool = templates.filter(x=>!existing.has(x.id));
+  if(!pool.length){
+    // evolucionar regla existente en vez de duplicar
+    if(AEO.rules.length){
+      const r = AEO.rules[Math.floor(Math.random()*AEO.rules.length)];
+      r.power = Math.min(3, (r.power||1)+0.5);
+      aeoLog("Regla evoluciona: "+r.name+" · poder "+r.power);
+      return r;
+    }
+    return null;
+  }
+  const rule = Object.assign({power:1, born:Date.now(), gen:AEO.gen}, pool[Math.floor(Math.random()*pool.length)]);
+  AEO.rules.push(rule);
+  aeoLog("Nueva regla emergente: "+rule.name+" — "+rule.desc);
+  showBanner("🧬 El mundo se impone una ley: "+rule.name, "warn", 5000);
+  return rule;
+}
+
+// Construye un ÓRGANO (módulo de comportamiento)
+function aeoBuildOrgan(){
+  const organs = [
+    {id:"immune", name:"Sistema inmune", desc:"Auto-repara biota en nodos estables"},
+    {id:"predator", name:"Depredador", desc:"EDAI prioriza nodos cicatrizados"},
+    {id:"storyteller", name:"Narrador", desc:"Emite lore solo cuando hay calma"},
+    {id:"stormclock", name:"Reloj de tormenta", desc:"Fenómenos rítmicos cada N turnos"},
+    {id:"symbiosis", name:"Simbiosis", desc:"Seed rinde más si hay esporas"}
+  ];
+  const have = new Set((AEO.organs||[]).map(o=>o.id));
+  const pool = organs.filter(o=>!have.has(o.id));
+  if(!pool.length) return null;
+  const organ = Object.assign({born:Date.now(), gen:AEO.gen, active:true}, pool[Math.floor(Math.random()*pool.length)]);
+  AEO.organs.push(organ);
+  aeoLog("Órgano despertado: "+organ.name);
+  showBanner("🧬 Órgano vivo: "+organ.name, "warn", 4500);
+  toast(organ.name+" · online");
+  return organ;
+}
+
+function aeoHas(id){
+  return (AEO.organs||[]).some(o=>o.id===id && o.active!==false) || (AEO.rules||[]).some(r=>r.id===id);
+}
+
+function aeoApplyRulesOnTurn(){
+  const rules = AEO.rules||[];
+  for(const r of rules){
+    const p = r.power||1;
+    if(r.apply==="scar_tax"){
+      const scars = Object.values(W.nodes).reduce((s,n)=>s+(n.scars||0),0);
+      if(scars>=3) W.chaos = Math.min(100, W.chaos + Math.floor(p));
+    }
+    if(r.apply==="night_raid" && (W.dayPhase||0)>0.55){
+      AEO._nightBoost = 0.15*p;
+    }
+    if(r.apply==="fusion_hunger"){
+      AEO.traits.fusionThresh = Math.max(30, AEO.traits.fusionThresh - p);
+    }
+    if(r.apply==="continent_pride"){
+      AEO._regionBonusExtra = Math.floor(p);
+    }
+  }
+}
+
+function aeoRunOrgans(){
+  for(const o of (AEO.organs||[])){
+    if(o.active===false) continue;
+    if(o.id==="immune"){
+      Object.keys(W.living.forms||{}).forEach(id=>{
+        const n=W.nodes[id], f=W.living.forms[id];
+        if(n && n.stability>60 && f && Math.random()<0.2) f.population = Math.min(20, f.population+1);
+      });
+    }
+    if(o.id==="storyteller" && W.chaos<35 && Math.random()<AEO.traits.loreHunger){
+      if(typeof unlockLore==="function") unlockLore();
+      else aeoLog("El narrador recuerda un fragmento…");
+    }
+    if(o.id==="stormclock" && W.turn>0 && W.turn%4===0 && Math.random()<0.5){
+      if(typeof spawnPhenomenon==="function"){ aeoLog("Reloj de tormenta"); spawnPhenomenon(); }
+    }
+    if(o.id==="symbiosis"){
+      AEO._symbiosis = true;
+    }
+  }
+}
+
+// Auto-reparación blanda
+function aeoSelfRepair(){
+  if(Math.random() > (AEO.traits.selfRepair||0.9)) return;
+  if(!W) return;
+  // arreglar nodos sin owner
+  Object.values(W.nodes).forEach(n=>{
+    if(!n.owner) n.owner="edai";
+    if(n.armies==null || n.armies<0) n.armies=1;
+  });
+  if(!W.living || !W.living.forms){
+    if(typeof seedLiving==="function") W.living = seedLiving();
+    aeoLog("Auto-reparó living");
+  }
+  if(W.chaos==null || isNaN(W.chaos)) W.chaos=10;
+  if(W.ap==null) W.ap = Math.round(AEO.traits.apBase||5);
+}
+
+// Pulso vital del organismo (autónomo)
+function aeoPulse(){
+  AEO.pulses = (AEO.pulses||0)+1;
+  aeoSelfRepair();
+  aeoAdapt();
+  aeoApplyRulesOnTurn();
+  aeoRunOrgans();
+
+  // Cada cierto pulso: construirse a sí mismo
+  if(AEO.pulses % 7 === 0 && Math.random() < (0.35 + AEO.traits.curiosity*0.3)){
+    if(Math.random()<0.5) aeoBuildRule();
+    else aeoBuildOrgan();
+  }
+
+  // Mutación lenta de genoma del organismo
+  if(AEO.pulses % 11 === 0){
+    const keys = Object.keys(AEO.traits);
+    const k = keys[Math.floor(Math.random()*keys.length)];
+    const jitter = (Math.random()-0.5)*0.06;
+    const prev = AEO.traits[k];
+    AEO.traits[k] = Math.max(0.05, prev + jitter);
+    aeoLog("Mutación de rasgo "+k+": "+prev.toFixed?.(2)+" → "+Number(AEO.traits[k]).toFixed(2));
+  }
+
+  // Generación del organismo
+  if(AEO.pulses > 0 && AEO.pulses % 50 === 0){
+    AEO.gen = (AEO.gen||1)+1;
+    aeoLog("El organismo cumple generación "+AEO.gen);
+    showBanner("🧬 Generación AEO "+AEO.gen+" — el juego se reescribe por dentro", "danger", 5500);
+  }
+
+  // sincronizar rasgos al mundo
+  if(W){
+    W._aeoPhenRate = AEO.traits.phenRate;
+    W._aeoEdai = AEO.traits.edaiPressure;
+    W._aeoChaosGain = AEO.traits.chaosGain;
+    W._aeoFusion = AEO.traits.fusionThresh;
+  }
+
+  saveAEO(AEO);
+  const chip = $("chip-aeo");
+  if(chip) chip.textContent = "AEO G"+AEO.gen+"·P"+AEO.pulses;
+}
+
+function aeoStatusDump(){
+  const r = (AEO.rules||[]).map(x=>x.name).join(", ")||"ninguna";
+  const o = (AEO.organs||[]).map(x=>x.name).join(", ")||"ninguno";
+  const msg = `AEO gen ${AEO.gen} · pulsos ${AEO.pulses} · reglas: ${r} · órganos: ${o}`;
+  pushLog("🧬 "+msg);
+  showBanner(msg, "warn", 6000);
+  toast("Organismo · G"+AEO.gen);
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// EL REFLEJO — LEGIÓN te analiza. El mundo sueña. Una sombra
+// juega con tus manos retardadas. No es más HUD: es que el
+// juego por fin te mira de vuelta.
+// ═══════════════════════════════════════════════════════════
+const REFLEJO_KEY = "voidcrown_reflejo_v10";
+const ACTION_RING_KEY = "voidcrown_action_ring_v10";
+
+function loadReflejo(){
+  try{ return Object.assign({seenDossier:false, prophecies:[], shadowEnabled:true}, JSON.parse(localStorage.getItem(REFLEJO_KEY)||"{}")); }
+  catch(e){ return {seenDossier:false, prophecies:[], shadowEnabled:true}; }
+}
+function saveReflejo(r){ try{ localStorage.setItem(REFLEJO_KEY, JSON.stringify(r)); }catch(e){} }
+function loadActionRing(){
+  try{ return JSON.parse(localStorage.getItem(ACTION_RING_KEY)||"[]"); }catch(e){ return []; }
+}
+function pushActionRing(act){
+  const ring = loadActionRing();
+  ring.push({t:Date.now(), act, turn: W?W.turn:0, node: W?W.selected:null});
+  while(ring.length>12) ring.shift();
+  try{ localStorage.setItem(ACTION_RING_KEY, JSON.stringify(ring)); }catch(e){}
+}
+
+function playerArchetype(){
+  const m = (typeof AEO!=="undefined" && AEO.memory) ? AEO.memory : {playerAttacks:0,guidesHeard:0,playerWins:0,playerLosses:0,avgChaos:10};
+  const a = m.playerAttacks||0, g = m.guidesHeard||0, w = m.playerWins||0, l = m.playerLosses||0, c = m.avgChaos||10;
+  if(g>=8 && g>=a) return {id:"orador", title:"El que habla al Director", vein:"Crees que las palabras doblan el tablero. A veces es verdad."};
+  if(a>=20 && a>g*2) return {id:"cuchillo", title:"El cuchillo impaciente", vein:"Atacas antes de preguntar. El mapa aprende tu prisa."};
+  if(l>w+2) return {id:"cicatriz", title:"El que pierde y vuelve", vein:"No eres el más fuerte. Eres el que regresa. Eso asusta más."};
+  if(w>l+3) return {id:"corona", title:"El que ya huele a victoria", vein:"Ganas de más. El organismo está subiendo el precio."};
+  if(c>60) return {id:"incendio", title:"Hijo del caos", vein:"Donde pisas, el caos sube. ¿Lo buscas… o te sigue?"};
+  if(a<5 && g<2) return {id:"fantasma", title:"El que apenas tocó el cristal", vein:"Todavía no dejaste sangre en el cristal. LEGIÓN espera."};
+  return {id:"testigo", title:"El testigo armado", vein:"No solo juegas. Observas. Como nosotros."};
+}
+
+function buildLegionDossier(){
+  const arch = playerArchetype();
+  const ret = typeof loadRet==="function" ? loadRet() : {games:0};
+  const mind = typeof loadMind==="function" ? loadMind() : {generation:1, aggression:0.35};
+  const aeoGen = (typeof AEO!=="undefined" && AEO.gen) ? AEO.gen : 1;
+  const aeoPulse = (typeof AEO!=="undefined" && AEO.pulses) ? AEO.pulses : 0;
+  const rules = (typeof AEO!=="undefined" && AEO.rules) ? AEO.rules.length : 0;
+  const organs = (typeof AEO!=="undefined" && AEO.organs) ? AEO.organs.length : 0;
+  const scars = W ? Object.values(W.nodes).reduce((s,n)=>s+(n.scars||0),0) : 0;
+  const mem = (typeof AEO!=="undefined" && AEO.memory) ? AEO.memory : {};
+
+  const name = "OPERADOR-" + (ret.games||0) + "-" + (mind.generation||1);
+  const lines = [];
+  lines.push("Clasificación: " + arch.title + ".");
+  lines.push(arch.vein);
+  lines.push("");
+  lines.push("Partidas en este cristal: " + (ret.games||0) + ".");
+  lines.push("Generación de mente: " + (mind.generation||1) + " · Agresión EDAI calibrada: " + Number(mind.aggression||0.35).toFixed(2) + ".");
+  lines.push("Organismo AEO: gen " + aeoGen + ", " + aeoPulse + " pulsos, " + rules + " leyes propias, " + organs + " órganos.");
+  lines.push("Ataques registrados: " + (mem.playerAttacks||0) + " · Guías al Director: " + (mem.guidesHeard||0) + ".");
+  lines.push("Cicatrices en el teatro actual: " + scars + ".");
+  lines.push("");
+  if((ret.games||0) >= 10) lines.push("Nota LEGIÓN: este operador ya no es turista. El mapa tiene su olor.");
+  else if((ret.games||0) >= 3) lines.push("Nota LEGIÓN: vuelve. Eso basta para abrir un expediente.");
+  else lines.push("Nota LEGIÓN: primera sangre aún reciente. Seguimos midiendo.");
+  lines.push("");
+  lines.push("Predicción: " + prophecyFor(arch.id, scars, mem));
+
+  return {
+    title: "Expediente " + name,
+    body: lines.join("\n"),
+    sig: "— Fragmento de LEGIÓN · no eres el jugador · eres el fenómeno que medimos",
+    arch
+  };
+}
+
+function prophecyFor(archId, scars, mem){
+  const pool = {
+    orador: [
+      "Una guía tuya va a disparar una ley que no pediste.",
+      "El Director guardará una frase tuya como si fuera dogma."
+    ],
+    cuchillo: [
+      "La próxima racha de tres te va a costar un continente.",
+      "EDAI va a copiar tu prisa. No te va a gustar verte de lejos."
+    ],
+    cicatriz: [
+      "Una ciudad que perdiste va a soñar contigo antes de que vuelvas.",
+      "El organismo afloja cuando sangras de más. No lo confundes con piedad."
+    ],
+    corona: [
+      "Ganar otra vez va a despertar un órgano que no controlas.",
+      "El precio del éxito es un mapa que se niega a ser fácil."
+    ],
+    incendio: [
+      "El caos va a fusionar dos desastres con tu nombre en el log.",
+      "Hay un tornado de fuego que todavía no nace. Lleva tu ritmo."
+    ],
+    fantasma: [
+      "Si te vas ahora, el mundo igual juega un turno sin ti.",
+      "LEGIÓN prefiere operadores que dejan marca. Aún estás a tiempo."
+    ],
+    testigo: [
+      "Vas a leer este expediente otra vez y ya no dirá lo mismo.",
+      "El testigo termina siendo territorio. Siempre."
+    ]
+  };
+  const arr = pool[archId] || pool.testigo;
+  let s = arr[Math.floor(Math.random()*arr.length)];
+  if(scars > 12) s += " Las cicatrices ya son mayoría en algunas fronteras.";
+  if((mem.guidesHeard||0) > 10) s += " Hablas tanto que el Director empieza a sonar como tú.";
+  return s;
+}
+
+function showReflejo(force){
+  const r = loadReflejo();
+  if(r.seenDossier && !force) return;
+  const d = buildLegionDossier();
+  const ov = $("reflejo-overlay");
+  if(!ov) return;
+  $("reflejo-title").textContent = d.title;
+  $("reflejo-body").textContent = d.body;
+  $("reflejo-sig").textContent = d.sig;
+  ov.classList.add("show");
+  r.seenDossier = true;
+  r.lastArch = d.arch.id;
+  r.prophecies = (r.prophecies||[]).concat([prophecyFor(d.arch.id, 0, {})]).slice(-8);
+  saveReflejo(r);
+  pushLog("👁 LEGIÓN abrió tu expediente");
+  if(typeof sfx==="function") sfx("rift");
+}
+
+function hideReflejo(){
+  const ov = $("reflejo-overlay");
+  if(ov) ov.classList.remove("show");
+}
+
+// Sombra: reproduce una acción tuya de hace N turnos como eco hostil/aliado
+function shadowTick(){
+  const r = loadReflejo();
+  if(r.shadowEnabled===false) return;
+  const ring = loadActionRing();
+  if(ring.length < 4) return;
+  // acción de hace ~3 entradas
+  const ghost = ring[ring.length-4];
+  if(!ghost || !W) return;
+  if(ghost.act==="attack" && Math.random()<0.4){
+    // la sombra golpea un nodo al azar del enemigo del dueño original — eco narrativo
+    const enemy = Object.values(W.nodes).filter(n=>n.owner==="edai");
+    if(enemy.length && Math.random()<0.5){
+      const n = enemy[Math.floor(Math.random()*enemy.length)];
+      n.scars = (n.scars||0)+1;
+      W.chaos = Math.min(100, W.chaos+1);
+      pushLog("👤 REFLEJO · tu sombra deja cicatriz en "+n.name+" (eco de un ataque viejo)");
+      if(Math.random()<0.3) showBanner("👤 Tu sombra jugó sin pedirte permiso","danger",3500);
+    }
+  }
+  if(ghost.act==="guide" && Math.random()<0.35){
+    W.chaos = Math.max(0, W.chaos + (Math.random()<0.5?2:-2));
+    pushLog("👤 REFLEJO · eco de una guía antigua mueve el caos");
+  }
+}
+
+// El mundo juega un micro-turno si estás AFK
+let _afk = 0;
+function afkWorldPlays(dt){
+  if(gameMode!=="earth") return;
+  _afk += dt;
+  if(_afk < 45) return; // 45s idle
+  _afk = 0;
+  if(!W) return;
+  W.chaos = Math.min(100, W.chaos+1);
+  if(typeof edaiTurn==="function" && Math.random()<0.4){
+    W = edaiTurn(W);
+    pushLog("⏳ Estabas en silencio. EDAI movió ficha.");
+    showBanner("⏳ El mundo jugó sin ti","warn",4000);
+  } else if(typeof spawnPhenomenon==="function" && Math.random()<0.35){
+    spawnPhenomenon();
+    pushLog("⏳ Estabas en silencio. El planeta no.");
+  }
+  if(typeof aeoPulse==="function") aeoPulse();
+  updateHUD();
+}
+// reset afk on interaction
+["pointerdown","keydown","touchstart"].forEach(ev=>window.addEventListener(ev,()=>{ _afk=0; }, {passive:true}));
+
+// Sueño del mundo al boot si hay cicatrices en autosave
+function worldDream(){
+  if(!W) return null;
+  const scars = Object.values(W.nodes).reduce((s,n)=>s+(n.scars||0),0);
+  if(scars<3) return null;
+  const names = Object.values(W.nodes).filter(n=>(n.scars||0)>0).map(n=>n.name);
+  const pick = names[Math.floor(Math.random()*names.length)] || "un territorio sin nombre";
+  const dreams = [
+    "Soñé que "+pick+" seguía ardiendo aunque nadie estuviera conectado.",
+    "En el sueño, "+pick+" preguntaba por qué la volvieron a dibujar intacta.",
+    "Alguien en "+pick+" contaba soldados que el save ya no tiene.",
+    "El planeta giró al revés una vez. Solo "+pick+" se dio cuenta."
+  ];
+  return dreams[Math.floor(Math.random()*dreams.length)];
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// HALLAZGO 11 — Sesión con forma · claridad · ausencia · eco
+// · PWA · laboratorio vs juego limpio
+// ═══════════════════════════════════════════════════════════
+const SESSION_KEY="voidcrown_session_v11";
+const ECHO_KEY="voidcrown_echo_pool_v11";
+const SESSION_LEN=8; // turnos por sesión
+
+function loadSession(){
+  try{return Object.assign({turns:0,scarsAtStart:0,active:true,goal:"scar"},JSON.parse(localStorage.getItem(SESSION_KEY)||"{}"));}
+  catch(e){return{turns:0,scarsAtStart:0,active:true,goal:"scar"};}
+}
+function saveSession(s){try{localStorage.setItem(SESSION_KEY,JSON.stringify(s));}catch(e){}}
+let SESSION=loadSession();
+
+function totalScars(){
+  if(!W||!W.nodes) return 0;
+  return Object.values(W.nodes).reduce((s,n)=>s+(n.scars||0),0);
+}
+function sessionStartIfNeeded(){
+  if(!SESSION.active){ SESSION={turns:0,scarsAtStart:totalScars(),active:true,goal:"scar"}; }
+  if(SESSION.scarsAtStart==null) SESSION.scarsAtStart=totalScars();
+  saveSession(SESSION);
+  paintSessionBar();
+}
+function paintSessionBar(){
+  const el=$("session-bar");
+  if(!el) return;
+  const left=Math.max(0, SESSION_LEN-(SESSION.turns||0));
+  const scars=totalScars()-(SESSION.scarsAtStart||0);
+  el.textContent=`Sesión ${SESSION.turns||0}/${SESSION_LEN} · cicatrices esta sesión +${Math.max(0,scars)} · si sales, el mundo igual late`;
+}
+function sessionOnEndTurn(){
+  if(!SESSION.active) return;
+  SESSION.turns=(SESSION.turns||0)+1;
+  saveSession(SESSION);
+  paintSessionBar();
+  if(SESSION.turns>=SESSION_LEN) endSession();
+}
+function endSession(){
+  SESSION.active=false;
+  saveSession(SESSION);
+  const scars=Math.max(0,totalScars()-(SESSION.scarsAtStart||0));
+  const p=Object.values(W.nodes).filter(n=>n.owner==="player").length;
+  const e=Object.values(W.nodes).filter(n=>n.owner==="edai").length;
+  // eco colectivo local (pool en este dispositivo; listo para red futura)
+  const echo={
+    t:Date.now(),
+    scarsAdded:scars,
+    turn:W.turn,
+    chaos:W.chaos,
+    arch:(typeof playerArchetype==="function"?playerArchetype().id:"testigo"),
+    aeoGen:(typeof AEO!=="undefined"?AEO.gen:1),
+    nodesPlayer:p
+  };
+  pushEcho(echo);
+  const pool=loadEchoPool();
+  const globalScars=pool.reduce((s,x)=>s+(x.scarsAdded||0),0);
+  $("se-title").textContent = scars>0 ? "La sesión dejó marca" : "Sesión en silencio";
+  $("se-body").textContent = `Jugaste ${SESSION.turns} turnos de sesión. Mapa: tú ${p} · EDAI ${e} · caos ${W.chaos}. Cicatrices nuevas: ${scars}. El archivo sigue; tú puedes parar.`;
+  $("se-echo").textContent = `Eco local: ${pool.length} sesiones en este cristal · cicatrices acumuladas ${globalScars}. (El mesh global sería compartir estos ecos con permiso — aquí ya nacen.)`;
+  $("session-end").classList.add("show");
+  pushLog("◆ Sesión cerrada · ecos guardados");
+  if(typeof nucleusOnSessionEndHook==='function') nucleusOnSessionEndHook();
+  if(typeof sfx==="function") sfx("rift");
+  // mundo sigue un pulso al cerrar sesión (ausencia)
+  if(typeof aeoPulse==="function") aeoPulse();
+}
+function loadEchoPool(){
+  try{return JSON.parse(localStorage.getItem(ECHO_KEY)||"[]");}catch(e){return[];}
+}
+function pushEcho(e){
+  const pool=loadEchoPool().concat([e]).slice(-100);
+  try{localStorage.setItem(ECHO_KEY,JSON.stringify(pool));}catch(err){}
+}
+function continueSession(){
+  $("session-end").classList.remove("show");
+  SESSION={turns:0,scarsAtStart:totalScars(),active:true,goal:"scar"};
+  saveSession(SESSION);
+  paintSessionBar();
+  toast("Nueva sesión · el mundo no se reseteó");
+}
+function breatheOut(){
+  $("session-end").classList.remove("show");
+  if(typeof autoSaveWorld==="function") autoSaveWorld();
+  toast("Guardado · puedes cerrar el cristal");
+  pushLog("◆ Operador respira · mundo en autosave");
+}
+
+// Ausencia fuerte: al volver, informar qué pasó
+function absenceReport(){
+  try{
+    const last=JSON.parse(localStorage.getItem("voidcrown_absence_v11")||"null");
+    const now=Date.now();
+    localStorage.setItem("voidcrown_absence_v11",JSON.stringify({t:now,chaos:W?W.chaos:0,scars:totalScars()}));
+    if(!last||!last.t) return;
+    const hrs=(now-last.t)/3600000;
+    if(hrs<0.05) return; // <3 min
+    const scarDiff=totalScars()-(last.scars||0);
+    let msg=`⏱ Volviste tras ${hrs<1?Math.round(hrs*60)+" min":hrs.toFixed(1)+" h"}.`;
+    if(scarDiff>0) msg+=` Cicatrices +${scarDiff} desde entonces.`;
+    else msg+=` El teatro te esperaba.`;
+    if(hrs>1 && typeof aeoPulse==="function"){ aeoPulse(); msg+=` El organismo latió en tu ausencia.`; }
+    pushLog(msg);
+    showBanner(msg,"warn",5500);
+  }catch(e){}
+}
+
+// PWA service worker mínimo (cache del propio documento)
+function installPWA(){
+  if(!("serviceWorker" in navigator)) return;
+  const swBody = `
+const CACHE='voidcrown-hallazgo-v11';
+self.addEventListener('install',e=>{self.skipWaiting();});
+self.addEventListener('activate',e=>{e.waitUntil(clients.claim());});
+self.addEventListener('fetch',e=>{
+  e.respondWith(
+    fetch(e.request).then(r=>{
+      const c=r.clone();
+      caches.open(CACHE).then(cache=>{if(e.request.method==='GET')cache.put(e.request,c);});
+      return r;
+    }).catch(()=>caches.match(e.request))
+  );
+});
+`;
+  try{
+    const blob=new Blob([swBody],{type:"application/javascript"});
+    const url=URL.createObjectURL(blob);
+    navigator.serviceWorker.register(url).then(()=>console.info("PWA SW registered")).catch(()=>{});
+  }catch(e){}
+}
+
+function toggleLab(){
+  document.body.classList.toggle("lab");
+  const on=document.body.classList.contains("lab");
+  toast(on?"LAB abierto · todo el arsenal":"Modo limpio · solo lo esencial");
+  pushLog(on?"◆ LAB ON":"◆ LAB OFF · hallazgo limpio");
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// CLUSTER OPT-IN — cómputo voluntario MIENTRAS juegas
+// No es minería. Simula mutaciones del organismo, ecos y
+// escenarios "qué pasaría si…" para enriquecer TU partida.
+// ═══════════════════════════════════════════════════════════
+const CLUSTER_KEY="voidcrown_cluster_optin_v11";
+function loadCluster(){
+  try{return Object.assign({on:false, jobs:0, lastBoost:0, depth:0}, JSON.parse(localStorage.getItem(CLUSTER_KEY)||"{}"));}
+  catch(e){return{on:false,jobs:0,lastBoost:0,depth:0};}
+}
+function saveCluster(c){try{localStorage.setItem(CLUSTER_KEY,JSON.stringify(c));}catch(e){}}
+let CLUSTER=loadCluster();
+let _clusterBusy=false;
+
+function setCluster(on){
+  CLUSTER.on=!!on;
+  saveCluster(CLUSTER);
+  const b=$("btn-cluster");
+  if(b) b.textContent = CLUSTER.on ? "⚡ CLUSTER ON" : "⚡ Cluster (opt-in)";
+  toast(CLUSTER.on ? "Cluster ON · tu dispositivo trabaja para tu mundo" : "Cluster OFF");
+  pushLog(CLUSTER.on ? "⚡ Cluster opt-in activado · simulación a favor de tu sesión" : "⚡ Cluster apagado");
+}
+
+// Trabajo útil: proyectar mutaciones AEO y elegir la que mejora "riqueza" del teatro
+function clusterJob(){
+  if(!CLUSTER.on || _clusterBusy || typeof AEO==="undefined" || !W) return;
+  _clusterBusy=true;
+  CLUSTER.jobs=(CLUSTER.jobs||0)+1;
+  try{
+    // 1) Simular 3 mutaciones fantasma de rasgos y quedarnos con la más "viva"
+    const keys=Object.keys(AEO.traits);
+    let best=null, bestScore=-1e9;
+    for(let i=0;i<3;i++){
+      const trial=JSON.parse(JSON.stringify(AEO.traits));
+      const k=keys[Math.floor(Math.random()*keys.length)];
+      trial[k]=Math.max(0.05, trial[k]+(Math.random()-0.45)*0.08);
+      const score = (trial.curiosity||0)*2 + (trial.phenRate||0) + (trial.selfRepair||0) - Math.abs((trial.edaiPressure||1)-1)*0.5;
+      if(score>bestScore){ bestScore=score; best={k, val:trial[k], score}; }
+    }
+    if(best && Math.random()<0.4){
+      AEO.traits[best.k]=best.val;
+      if(typeof saveAEO==="function") saveAEO(AEO);
+      CLUSTER.depth=(CLUSTER.depth||0)+1;
+      if(CLUSTER.jobs%5===0) pushLog("⚡ Cluster afinó rasgo AEO · "+best.k);
+    }
+    // 2) Pre-calcular un eco de "sesión posible" y guardarlo como sombra útil
+    if(Math.random()<0.3){
+      const pool=typeof loadEchoPool==="function"?loadEchoPool():[];
+      if(pool.length && typeof AEO!=="undefined"){
+        AEO.memory.avgChaos = Math.round((AEO.memory.avgChaos*0.95)+(W.chaos*0.05));
+        if(typeof saveAEO==="function") saveAEO(AEO);
+      }
+    }
+    // 3) Si hay mucha cicatriz, cluster propone lore/regla con más probabilidad
+    if(typeof totalScars==="function" && totalScars()>8 && Math.random()<0.08){
+      if(typeof aeoBuildRule==="function" && Math.random()<0.5) aeoBuildRule();
+      else if(typeof aeoBuildOrgan==="function") aeoBuildOrgan();
+    }
+    CLUSTER.lastBoost=Date.now();
+    saveCluster(CLUSTER);
+    const chip=$("chip-cluster");
+    if(chip) chip.textContent="CLU "+(CLUSTER.jobs||0);
+  }catch(e){}
+  _clusterBusy=false;
+}
+
+// Usar idle del navegador o intervalo suave (solo con opt-in)
+function clusterTick(){
+  if(!CLUSTER.on) return;
+  if(typeof requestIdleCallback==="function"){
+    requestIdleCallback(()=>clusterJob(),{timeout:1200});
+  } else clusterJob();
+}
+setInterval(()=>{ if(CLUSTER.on) clusterTick(); }, 4000);
+
+function clusterStatus(){
+  pushLog(`⚡ Cluster ${CLUSTER.on?"ON":"OFF"} · trabajos ${CLUSTER.jobs||0} · profundidad ${CLUSTER.depth||0}`);
+  toast(`Cluster ${(CLUSTER.jobs||0)} jobs`);
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// NÚCLEO 12 — Arquitectura que supera el apilado de features
+//
+// Principio: UN solo flujo de verdad.
+//   EVENTO → se escribe en el ledger vivo
+//   REDUCE → el mundo es solo la suma de eventos
+//   PULSO → un corazón mueve ausencia, AEO, sombra, cluster, sesión
+//   SÍNTESIS → al cerrar sesión el juego SE ESCRIBE una ley nueva
+//   OPERADOR → tú existes como nodo en el mapa (no solo HUD)
+//
+// Esto no es más contenido. Es otra arquitectura.
+// ═══════════════════════════════════════════════════════════════
+const NUCLEUS_KEY="voidcrown_nucleus_v12";
+const EVENT_KEY="voidcrown_events_v12";
+
+function loadEvents(){
+  try{return JSON.parse(localStorage.getItem(EVENT_KEY)||"[]");}catch(e){return[];}
+}
+function appendEvent(type, payload={}){
+  const ev={id:"e_"+Date.now().toString(36)+Math.random().toString(36).slice(2,6), type, payload, t:Date.now(), turn:W?W.turn:0};
+  const all=loadEvents().concat([ev]).slice(-500);
+  try{localStorage.setItem(EVENT_KEY,JSON.stringify(all));}catch(e){}
+  if(W){
+    W.events=W.events||[];
+    W.events.push(ev);
+    if(W.events.length>80) W.events=W.events.slice(-80);
+  }
+  // mirror to classic ledger if present
+  if(typeof appendLedger==="function") try{appendLedger(type, JSON.stringify(payload).slice(0,80));}catch(e){}
+  return ev;
+}
+
+function nucleusEnsureOperatorNode(){
+  if(!W||!W.nodes) return;
+  if(W.nodes.operador) return;
+  // El jugador ES territorio — arquitectura: no hay "fuera del mapa"
+  W.nodes.operador={
+    id:"operador", name:"OPERADOR", lat:0, lon:0,
+    region:"na", country:"Cristal", city:"Tú",
+    owner:"player", armies:3, stability:70, scars:0, voidcrack:0,
+    isOperator:true
+  };
+  if(W.living&&W.living.forms&&!W.living.forms.operador){
+    W.living.forms.operador={population:5, scars:0, genome:typeof blankGenome==="function"?blankGenome():{}};
+  }
+  appendEvent("operator_manifested",{});
+  pushLog("◉ NÚCLEO · el OPERADOR ahora es un nodo del teatro");
+}
+
+function nucleusSynthesizeLaw(){
+  // Lee eventos de la sesión y emite una ley permanente al AEO
+  const evs=loadEvents().slice(-40);
+  const types=evs.reduce((m,e)=>{m[e.type]=(m[e.type]||0)+1;return m;},{});
+  let law;
+  if((types.attack||0)>(types.guide||0)+3){
+    law={id:"law_blade_"+Date.now().toString(36), name:"Ley del Filo", desc:"Los ataques dejan +1 cicatriz extra en victoria", apply:"blade", power:1};
+  } else if((types.guide||0)>=3){
+    law={id:"law_voice_"+Date.now().toString(36), name:"Ley de la Voz", desc:"Las guías reducen caos adicional", apply:"voice", power:1};
+  } else if((types.phen||0)>=2){
+    law={id:"law_storm_"+Date.now().toString(36), name:"Ley de la Tormenta", desc:"Fenómenos más probables tras ausencia", apply:"storm", power:1};
+  } else if((types.session_end||0)>=1){
+    law={id:"law_return_"+Date.now().toString(36), name:"Ley del Regreso", desc:"Al volver, el mundo cobra 1 caos por hora ausente (máx 5)", apply:"return", power:1};
+  } else {
+    law={id:"law_watch_"+Date.now().toString(36), name:"Ley de la Mirada", desc:"LEGIÓN registra arquetipo al cerrar sesión", apply:"watch", power:1};
+  }
+  if(typeof AEO!=="undefined"){
+    AEO.rules=AEO.rules||[];
+    // no duplicar mismo name
+    if(!AEO.rules.some(r=>r.name===law.name)){
+      AEO.rules.push(Object.assign({born:Date.now(), gen:AEO.gen||1}, law));
+      if(typeof saveAEO==="function") saveAEO(AEO);
+      appendEvent("synthesis_law",{name:law.name});
+      pushLog("◈ SÍNTESIS DEL NÚCLEO · el juego se escribió: "+law.name+" — "+law.desc);
+      showBanner("◈ El NÚCLEO legisló: "+law.name,"danger",6000);
+      return law;
+    }
+  }
+  appendEvent("synthesis_law",{name:law.name, dup:true});
+  pushLog("◈ Síntesis: "+law.name+" (ya resonaba)");
+  return law;
+}
+
+function nucleusApplyBladeOnConquest(node){
+  if(typeof AEO==="undefined"||!AEO.rules) return;
+  if(AEO.rules.some(r=>r.apply==="blade") && node){
+    node.scars=(node.scars||0)+1;
+    pushLog("◈ Ley del Filo · cicatriz extra");
+  }
+}
+
+function nucleusUnifiedPulse(dt){
+  // UN corazón — supera ticks dispersos compitiendo
+  if(!W) return;
+  if(typeof ambientWorldTick==="function") ambientWorldTick(dt);
+  if(typeof shadowTick==="function" && gameMode==="earth") shadowTick();
+  if(typeof afkWorldPlays==="function") afkWorldPlays(dt);
+  // cluster ya tiene interval; aquí un empujón si ON
+  if(typeof CLUSTER!=="undefined" && CLUSTER.on && Math.random()<0.02) clusterTick();
+}
+
+function nucleusOnSessionEndHook(){
+  appendEvent("session_end",{turn:W.turn, chaos:W.chaos, scars:typeof totalScars==="function"?totalScars():0});
+  const law=nucleusSynthesizeLaw();
+  // Escribir manifiesto de arquitectura en localStorage
+  try{
+    const man={
+      t:Date.now(),
+      build:typeof BUILD!=="undefined"?BUILD:"nucleus",
+      events:loadEvents().length,
+      law:law?law.name:null,
+      arch:typeof playerArchetype==="function"?playerArchetype().id:null,
+      principle:"EVENT → REDUCE → PULSE → SYNTHESIS · operator-is-node"
+    };
+    localStorage.setItem(NUCLEUS_KEY, JSON.stringify(man));
+  }catch(e){}
+}
+
+function nucleusBoot(){
+  nucleusEnsureOperatorNode();
+  appendEvent("boot",{build:typeof BUILD!=="undefined"?BUILD:""});
+  const chip=$("chip-nucleus");
+  if(chip) chip.textContent="NÚCLEO";
+  pushLog("◆ NÚCLEO 12 · eventos como verdad · operador-en-mapa · síntesis al cerrar sesión");
+}
+
+function nucleusStatus(){
+  const n=loadEvents().length;
+  const man=(()=>{try{return JSON.parse(localStorage.getItem(NUCLEUS_KEY)||"{}");}catch(e){return{};}})();
+  const msg=`NÚCLEO · ${n} eventos · última ley: ${man.law||"—"} · principio: operador es nodo`;
+  pushLog("◆ "+msg);
+  showBanner(msg,"warn",5000);
+  toast("Núcleo activo");
+  if(W&&W.nodes&&W.nodes.operador){
+    inspectNode&&inspectNode("operador");
+  }
+}
+
+function directorTick(){
+  const fb=retentionFeedback();
+  const pressure=fb.pressure;
+  // 1) Phenomena under pressure
+  if(W.chaos>35*pressure && Math.random()<.3*pressure) spawnPhenomenon();
+  // 2) Structured MutationPatches
+  if(Math.random() < 0.25*pressure){
+    const ids=Object.keys(W.nodes);
+    const nid=ids[Math.floor(Math.random()*ids.length)];
+    const n=W.nodes[nid];
+    const types=["genome_drift","scar","spore_boost","stability_drop","doctrine_nudge"];
+    const type=types[Math.floor(Math.random()*types.length)];
+    let reason="";
+    if(type==="genome_drift" && W.living.forms[nid]){
+      W.living.forms[nid].genome=mutateGenome(W.living.forms[nid].genome, 0.04*pressure);
+      reason=`Genoma de ${n.name} deriva (presión ${fb.label})`;
+    }else if(type==="scar"){
+      n.scars=(n.scars||0)+1;
+      if(W.living.forms[nid]) W.living.forms[nid].scars=(W.living.forms[nid].scars||0)+1;
+      reason=`Cicatrix Director en ${n.name}`;
+    }else if(type==="spore_boost" && W.living.forms[nid]){
+      W.living.forms[nid].population+=Math.ceil(2*pressure);
+      reason=`Esporas en ${n.name} (+biota)`;
+    }else if(type==="stability_drop"){
+      n.stability=Math.max(0,(n.stability||50)-Math.floor(8*pressure));
+      reason=`Estabilidad cae en ${n.name}`;
+    }else{
+      if(W.chaos>50) W.doctrine="AUSTERIDAD";
+      if(W.chaos>75) W.doctrine="RESCATE";
+      reason=`Doctrina → ${W.doctrine||"NORMAL"}`;
+    }
+    const patch=applyMutationPatch({id:"mp_"+Date.now().toString(36), type, target:nid, payload:{}, reason, t:Date.now()});
+    pushLog(`🧬 MutationPatch · ${reason}`);
+    if(Math.random()<0.4) toast(`Director: ${reason}`, 3000);
+  }
+  // 3) Grietas (doctrine: activas en Cap I = cicatrices del mundo)
+  if(W.chaos>70*pressure && Math.random()<.35*pressure){
+    const ids=Object.keys(W.nodes);const nid=ids[Math.floor(Math.random()*ids.length)];
+    W.nodes[nid].voidcrack=(W.nodes[nid].voidcrack||0)+1;W.voidCracks++;
+    applyMutationPatch({id:"mp_rift_"+Date.now().toString(36), type:"rift", target:nid, payload:{voidcrack:W.nodes[nid].voidcrack}, reason:`Grieta (cicatriz Cap I) en ${W.nodes[nid].name}`, t:Date.now()});
+    pushLog(`◈ Grieta (doctrina Cap I) en ${W.nodes[nid].name}`);sfx("rift");
+    showBanner(`◈ GRIETA en ${W.nodes[nid].name} — el mundo recuerda`,"danger",4500);
+  }
+  // 4) Biota drift
+  Object.values(W.living.forms).forEach(f=>{if(Math.random()<.12*pressure)f.population=Math.max(0,f.population+(Math.random()>.55?1:-1));});
+  updateHUD();
+}
+
+// THREE
+const canvas=$("c");
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,powerPreference:"high-performance"});
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));
+renderer.setSize(innerWidth,innerHeight);
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.2;
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x000006);
+scene.fog=new THREE.FogExp2(0x000006,0.0006);
+
+const camera=new THREE.PerspectiveCamera(42,innerWidth/innerHeight,0.02,600);
+camera.position.set(0,14,40);
+
+const controls=new OrbitControls(camera,renderer.domElement);
+controls.enableDamping=true;controls.dampingFactor=.055;
+controls.minDistance=.15;controls.maxDistance=140;controls.target.set(0,0,0);
+
+const composer=new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene,camera));
+const bloom=new UnrealBloomPass(new THREE.Vector2(innerWidth,innerHeight),.8,.45,.82);
+composer.addPass(bloom);
+
+function makeStars(n=8000){
+  const g=new THREE.BufferGeometry(),pos=new Float32Array(n*3),col=new Float32Array(n*3);
+  for(let i=0;i<n;i++){
+    const r=90+Math.random()*320,th=Math.random()*Math.PI*2,ph=Math.acos(2*Math.random()-1);
+    pos[i*3]=r*Math.sin(ph)*Math.cos(th);pos[i*3+1]=r*Math.sin(ph)*Math.sin(th);pos[i*3+2]=r*Math.cos(ph);
+    const c=.55+Math.random()*.45;col[i*3]=c;col[i*3+1]=c;col[i*3+2]=.8+Math.random()*.2;
+  }
+  g.setAttribute("position",new THREE.BufferAttribute(pos,3));
+  g.setAttribute("color",new THREE.BufferAttribute(col,3));
+  return new THREE.Points(g,new THREE.PointsMaterial({size:.32,vertexColors:true,transparent:true,opacity:.92,depthWrite:false}));
+}
+scene.add(makeStars());
+
+const sunGroup=new THREE.Group();
+const sunMesh=new THREE.Mesh(new THREE.SphereGeometry(2.9,64,64),new THREE.MeshBasicMaterial({color:0xffcc55}));
+sunGroup.add(sunMesh);
+sunGroup.add(new THREE.Mesh(new THREE.SphereGeometry(3.6,32,32),new THREE.MeshBasicMaterial({color:0xffaa30,transparent:true,opacity:.2,side:THREE.BackSide})));
+sunGroup.add(new THREE.Mesh(new THREE.SphereGeometry(4.4,24,24),new THREE.MeshBasicMaterial({color:0xff8810,transparent:true,opacity:.08,side:THREE.BackSide})));
+const sunLight=new THREE.PointLight(0xfff2c8,3.5,220,1.3);
+sunGroup.add(sunLight);
+scene.add(sunGroup);
+scene.add(new THREE.AmbientLight(0x0a1028,.4));
+
+const PLANETS=[
+  {name:"Mercurio",color:0xa8a8a8,r:.36,dist:6.2,speed:.022,emissive:0x222222},
+  {name:"Venus",color:0xe8c068,r:.7,dist:9.0,speed:.013,emissive:0x331800},
+  {name:"Tierra",color:0x2a6ad8,r:.88,dist:12.4,speed:.009,emissive:0x001144,isEarth:true},
+  {name:"Marte",color:0xc03818,r:.52,dist:15.8,speed:.0065,emissive:0x220600},
+  {name:"Júpiter",color:0xd09860,r:1.95,dist:24.5,speed:.0032,emissive:0x221000},
+  {name:"Saturno",color:0xe0c888,r:1.65,dist:32.0,speed:.0022,emissive:0x221600,ring:true}
+];
+const planetMeshes=[],orbitLines=[];
+PLANETS.forEach(p=>{
+  const pts=[];for(let a=0;a<=72;a++){const ang=a/72*Math.PI*2;pts.push(new THREE.Vector3(Math.cos(ang)*p.dist,0,Math.sin(ang)*p.dist));}
+  const orb=new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:0x1a3344,transparent:true,opacity:.32}));
+  scene.add(orb);orbitLines.push(orb);
+  const g=new THREE.Group();
+  const mesh=new THREE.Mesh(new THREE.SphereGeometry(p.r,p.isEarth?64:36,p.isEarth?64:36),
+    new THREE.MeshStandardMaterial({color:p.color,roughness:.5,metalness:.12,emissive:p.emissive,emissiveIntensity:.4}));
+  g.add(mesh);
+  if(p.ring){const ring=new THREE.Mesh(new THREE.RingGeometry(p.r*1.35,p.r*2.15,72),new THREE.MeshBasicMaterial({color:0xc8b070,side:THREE.DoubleSide,transparent:true,opacity:.55}));ring.rotation.x=Math.PI/2.25;g.add(ring);}
+  if(p.isEarth){
+    const atmo=new THREE.Mesh(new THREE.SphereGeometry(p.r*1.14,32,32),new THREE.MeshBasicMaterial({color:0x4ec4f0,transparent:true,opacity:.18,side:THREE.BackSide}));
+    g.add(atmo);
+  }
+  g.userData={planet:p,angle:Math.random()*Math.PI*2};
+  g.position.set(p.dist,0,0);scene.add(g);planetMeshes.push(g);
+});
+
+const loader=new THREE.TextureLoader();loader.crossOrigin="anonymous";
+// ═══ TEXTURAS REALES · EVOLUCIÓN ADAPTATIVA INTELIGENTE ═══
+const TEX_EVO = {
+  level: 0, // 0 procedural → 1 low → 2 mid → 3 high
+  maxLevel: 3,
+  failed: 0,
+  lastUpgrade: 0,
+  labels: ["PROCEDURAL","LOW 1K","MID 2K","HIGH NASA"]
+};
+// Fuentes reales multi-CDN (evolución por calidad)
+const EARTH_TEX = {
+  day: {
+    1: [
+      "https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/textures/planets/earth_atmos_2048.jpg",
+      "https://unpkg.com/three@0.160.0/examples/textures/planets/earth_atmos_2048.jpg"
+    ],
+    2: [
+      "https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg",
+      "https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/textures/planets/earth_atmos_2048.jpg"
+    ],
+    3: [
+      "https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg",
+      "https://raw.githubusercontent.com/turban/webgl-earth/master/images/2_no_clouds_4k.jpg",
+      "https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/textures/planets/earth_atmos_2048.jpg"
+    ]
+  },
+  night: {
+    1: ["https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/textures/planets/earth_lights_2048.png"],
+    2: ["https://unpkg.com/three-globe/example/img/earth-dark.jpg","https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/textures/planets/earth_lights_2048.png"],
+    3: ["https://unpkg.com/three-globe/example/img/earth-dark.jpg","https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/textures/planets/earth_lights_2048.png"]
+  },
+  clouds: {
+    1: ["https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/textures/planets/earth_clouds_1024.png"],
+    2: ["https://unpkg.com/three-globe/example/img/earth-clouds.png","https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/textures/planets/earth_clouds_1024.png"],
+    3: ["https://unpkg.com/three-globe/example/img/earth-clouds.png","https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/textures/planets/earth_clouds_1024.png"]
+  },
+  bump: {
+    2: ["https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/textures/planets/earth_normal_2048.jpg"],
+    3: ["https://unpkg.com/three-globe/example/img/earth-topology.png","https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/textures/planets/earth_normal_2048.jpg"]
+  }
+};
+function detectTexBudget(){
+  // Inteligencia: hardware + red + historial de fallos
+  const dpr = Math.min(devicePixelRatio||1, 2);
+  const mem = (navigator.deviceMemory||4);
+  const cores = (navigator.hardwareConcurrency||4);
+  const saveData = !!(navigator.connection && navigator.connection.saveData);
+  const slowNet = !!(navigator.connection && /2g|slow-2g|3g/i.test(navigator.connection.effectiveType||""));
+  let score = 0;
+  if(dpr>=1.5) score+=1;
+  if(mem>=4) score+=1;
+  if(mem>=8) score+=1;
+  if(cores>=6) score+=1;
+  if(saveData||slowNet) score-=2;
+  if(TEX_EVO.failed>=2) score-=2;
+  if(TEX_EVO.failed>=4) score-=2;
+  // map score → level 0..3
+  if(score<=0) return 1; // always try at least low real textures
+  if(score===1) return 1;
+  if(score<=3) return 2;
+  return 3;
+}
+function loadFirst(urls, timeoutMs=12000){
+  return new Promise(res=>{
+    if(!urls||!urls.length){res(null);return;}
+    let i=0, done=false;
+    const finish=v=>{ if(!done){ done=true; res(v);} };
+    const timer=setTimeout(()=>finish(null), timeoutMs);
+    const tryNext=()=>{
+      if(i>=urls.length){ clearTimeout(timer); finish(null); return; }
+      const url=urls[i++];
+      loader.load(url, tex=>{
+        tex.colorSpace=THREE.SRGBColorSpace;
+        tex.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy?.()||4);
+        clearTimeout(timer); finish(tex);
+      }, undefined, ()=>{ TEX_EVO.failed++; tryNext(); });
+    };
+    tryNext();
+  });
+}
+function proceduralEarthTexture(){
+  const c=document.createElement("canvas"); c.width=512; c.height=256;
+  const g=c.getContext("2d");
+  const grd=g.createLinearGradient(0,0,0,256);
+  grd.addColorStop(0,"#0a1a40"); grd.addColorStop(.5,"#1a4a2a"); grd.addColorStop(1,"#0a1a40");
+  g.fillStyle=grd; g.fillRect(0,0,512,256);
+  g.fillStyle="rgba(30,90,40,.7)";
+  for(let i=0;i<40;i++){ g.beginPath(); g.ellipse(Math.random()*512,Math.random()*256,20+Math.random()*40,10+Math.random()*20,0,0,6.5); g.fill(); }
+  g.fillStyle="rgba(20,50,120,.5)";
+  for(let i=0;i<20;i++){ g.beginPath(); g.ellipse(Math.random()*512,Math.random()*256,30+Math.random()*50,15+Math.random()*25,0,0,6.5); g.fill(); }
+  const tex=new THREE.CanvasTexture(c); tex.colorSpace=THREE.SRGBColorSpace; return tex;
+}
+let earthMesh=null,cloudsMesh=null,earthGroupRef=null,bumpMap=null;
+async function applyEarthTextures(forceLevel){
+  const earthG=planetMeshes.find(g=>g.userData.planet.isEarth);
+  if(!earthG)return;
+  earthGroupRef=earthG;
+  const level = forceLevel!=null ? forceLevel : detectTexBudget();
+  TEX_EVO.level = level;
+  pushLog(`🌍 TEX EVO → nivel ${level} (${TEX_EVO.labels[level]}) · fallos=${TEX_EVO.failed}`);
+  const dayUrls = EARTH_TEX.day[level] || EARTH_TEX.day[1];
+  const nightUrls = EARTH_TEX.night[level] || EARTH_TEX.night[1];
+  const cloudUrls = EARTH_TEX.clouds[level] || EARTH_TEX.clouds[1];
+  const bumpUrls = (EARTH_TEX.bump[level]||null);
+  const [day,night,clouds,bump] = await Promise.all([
+    loadFirst(dayUrls),
+    loadFirst(nightUrls),
+    loadFirst(cloudUrls),
+    bumpUrls ? loadFirst(bumpUrls, 10000) : Promise.resolve(null)
+  ]);
+  const old = earthG.children.find(c=>c.isMesh && c.geometry && c.geometry.type==="SphereGeometry" && c.geometry.parameters?.radius<=0.9) || earthG.children[0];
+  const dayMap = day || proceduralEarthTexture();
+  if(!day){ TEX_EVO.level=0; pushLog("🌍 TEX fallback procedural (CDN falló)"); }
+  const segs = level>=3 ? 72 : level>=2 ? 64 : 48;
+  const mat = new THREE.MeshStandardMaterial({
+    map: dayMap,
+    roughness: 0.52,
+    metalness: 0.06,
+    emissiveMap: night || null,
+    emissive: night ? 0x112244 : 0x051020,
+    emissiveIntensity: night ? 0.45 : 0.22,
+    bumpMap: bump || null,
+    bumpScale: bump ? 0.035 : 0,
+    normalMap: bump || null,
+    normalScale: bump ? new THREE.Vector2(0.6,0.6) : new THREE.Vector2(1,1)
+  });
+  earthMesh = new THREE.Mesh(new THREE.SphereGeometry(0.88, segs, segs), mat);
+  if(old && old.parent===earthG) earthG.remove(old);
+  // remove previous earthMesh/clouds if any
+  earthG.children.slice().forEach(ch=>{
+    if(ch.userData && ch.userData.texLayer) earthG.remove(ch);
+  });
+  earthMesh.userData.texLayer="earth";
+  earthG.add(earthMesh);
+  if(clouds){
+    if(cloudsMesh && cloudsMesh.parent) cloudsMesh.parent.remove(cloudsMesh);
+    cloudsMesh = new THREE.Mesh(
+      new THREE.SphereGeometry(0.905, Math.max(32,segs-8), Math.max(32,segs-8)),
+      new THREE.MeshPhongMaterial({map:clouds, transparent:true, opacity: level>=2?0.45:0.35, depthWrite:false, blending:THREE.AdditiveBlending})
+    );
+    cloudsMesh.userData.texLayer="clouds";
+    earthG.add(cloudsMesh);
+  }
+  // adaptive pixel ratio with level
+  try{
+    const dprCap = level>=3 ? 1.75 : level>=2 ? 1.5 : 1.25;
+    renderer.setPixelRatio(Math.min(devicePixelRatio||1, dprCap));
+  }catch(e){}
+  TEX_EVO.lastUpgrade = Date.now();
+  const chip=$("chip-tex");
+  if(chip) chip.textContent = "TEX "+TEX_EVO.labels[TEX_EVO.level];
+  if(typeof toast==="function") toast("Texturas: "+TEX_EVO.labels[TEX_EVO.level]);
+}
+// Evolución: si el juego va fluido, intentar subir de nivel a los 8s
+function scheduleTexEvolution(){
+  setTimeout(async ()=>{
+    if(TEX_EVO.level < TEX_EVO.maxLevel && TEX_EVO.failed < 3){
+      const next = Math.min(TEX_EVO.maxLevel, TEX_EVO.level+1);
+      const budget = detectTexBudget();
+      if(budget >= next){
+        pushLog("🧬 TEX evolución adaptativa → nivel "+next);
+        await applyEarthTextures(next);
+      }
+    }
+  }, 8000);
+}
+
+
+const lodGroup=new THREE.Group();lodGroup.visible=false;scene.add(lodGroup);
+const nodeMarkers=[],cityLights=[],activityParticles=[];
+
+function latLonToVec(lat,lon,R){
+  const phi=(90-lat)*Math.PI/180,theta=(lon+180)*Math.PI/180;
+  return new THREE.Vector3(-R*Math.sin(phi)*Math.cos(theta),R*Math.cos(phi),R*Math.sin(phi)*Math.sin(theta));
+}
+
+function rebuildLOD(){
+  while(lodGroup.children.length)lodGroup.remove(lodGroup.children[0]);
+  nodeMarkers.length=0;cityLights.length=0;activityParticles.length=0;phenMarkers.length=0;
+  const R=.88;
+  NODES.forEach(n=>{
+    const pos=latLonToVec(n.lat,n.lon,R*1.02);
+    const col=W.nodes[n.id]?.owner==="player"?0x3dce7a:0xff3a2f;
+    if(lodLevel>=0){
+      const m=new THREE.Mesh(new THREE.SphereGeometry(lodLevel>=3?.02:.035,10,10),new THREE.MeshBasicMaterial({color:col}));
+      m.position.copy(pos);m.userData={nodeId:n.id,kind:"node"};
+      lodGroup.add(m);nodeMarkers.push(m);
+    }
+    if(lodLevel>=2){
+      const light=new THREE.Mesh(new THREE.SphereGeometry(.012,8,8),new THREE.MeshBasicMaterial({color:0xffe8a0,transparent:true,opacity:.85}));
+      light.position.copy(pos).multiplyScalar(1.005);
+      lodGroup.add(light);cityLights.push(light);
+    }
+    if(lodLevel>=4){
+      for(let k=0;k<6;k++){
+        const jitter=new THREE.Vector3((Math.random()-.5)*.04,(Math.random()-.5)*.04,(Math.random()-.5)*.04);
+        const p=new THREE.Mesh(new THREE.SphereGeometry(.004,4,4),new THREE.MeshBasicMaterial({color:Math.random()>.5?0xffcc44:0x88aaff}));
+        p.position.copy(pos).add(jitter);p.userData={base:pos.clone(),phase:Math.random()*Math.PI*2};
+        lodGroup.add(p);activityParticles.push(p);
+      }
+    }
+  });
+  (activePhen||[]).forEach(ph=>{
+    const src=NODES.find(x=>x.id===ph.nodeId); if(!src) return;
+    const pos=latLonToVec(src.lat,src.lon,R*1.08);
+    const m=new THREE.Mesh(new THREE.SphereGeometry(.055,10,10), new THREE.MeshBasicMaterial({color:0xff6b2d}));
+    m.position.copy(pos);m.userData={kind:"phen",nodeId:ph.nodeId,phen:ph.type};
+    lodGroup.add(m);phenMarkers.push(m);
+  });
+}
+
+
+// Ambient living pulse (mundo sigue sin el jugador)
+let _ambientAcc=0;
+function ambientWorldTick(dt){
+  if(gameMode!=="earth"&&gameMode!=="solar") return;
+  _ambientAcc+=dt;
+  if(_ambientAcc<4.5) return;
+  _ambientAcc=0;
+  if(!W.living||!W.living.forms) return;
+  // slow biota drift
+  const ids=Object.keys(W.living.forms);
+  const id=ids[Math.floor(Math.random()*ids.length)];
+  const f=W.living.forms[id];
+  if(f && Math.random()<(typeof AEO!=='undefined'&&AEO.traits?AEO.traits.biotaDrift:0.4)){
+    f.population=Math.max(0,f.population+(Math.random()>0.45?1:-1));
+  }
+  // scars glow message rare
+  if(W.chaos>50 && Math.random()<0.08){
+    const scarred=Object.values(W.nodes).filter(n=>(n.scars||0)>0);
+    if(scarred.length){
+      const n=scarred[Math.floor(Math.random()*scarred.length)];
+      pushLog("👁 El mundo recuerda "+n.name+" ("+n.scars+" cicatrices)");
+    }
+  }
+}
+
+
+// ═══ DIRECTOR VOZ DEL JUGADOR (minado de director-mutations) ═══
+// Código estable, datos mutables. El jugador guía con texto libre.
+const GUIDE_KEY = "voidcrown_guides_v61";
+const DIR_KEY = "voidcrown_director_v61";
+function loadGuides(){ try{return JSON.parse(localStorage.getItem(GUIDE_KEY)||"[]");}catch(e){return[];} }
+function saveGuides(g){ try{localStorage.setItem(GUIDE_KEY, JSON.stringify(g.slice(-40)));}catch(e){} }
+function loadDirectorState(){
+  try{return Object.assign({mood:"calm", tension:0.3, lastMsg:"", tagWeights:{}}, JSON.parse(localStorage.getItem(DIR_KEY)||"{}"));}
+  catch(e){return{mood:"calm", tension:0.3, lastMsg:"", tagWeights:{}};}
+}
+function saveDirectorState(d){ try{localStorage.setItem(DIR_KEY, JSON.stringify(d));}catch(e){} }
+function tagsFromGuideText(text){
+  const s=(text||"").toLowerCase();
+  const tags=[];
+  if(/daño|damage|nuke|fuerte|power/.test(s)) tags.push("more_damage");
+  if(/menos daño|suave|soft/.test(s)) tags.push("less_damage");
+  if(/espect[aá]culo|show|bloom|lindo|bonito/.test(s)) tags.push("spectacle");
+  if(/quieto|silencio|calm|paz/.test(s)) tags.push("quiet");
+  if(/caos|chaos|locura|insano/.test(s)) tags.push("chaos");
+  if(/r[aá]pido|fast|veloz/.test(s)) tags.push("faster");
+  if(/lento|slow/.test(s)) tags.push("slower");
+  if(/supervivencia|survival|defender/.test(s)) tags.push("survival");
+  if(/explora|explore|viaje|mundo/.test(s)) tags.push("exploration");
+  if(/barato|cheap|ap/.test(s)) tags.push("cheaper");
+  if(/dif[ií]cil|hard|imposible/.test(s)) tags.push("expensive");
+  if(!tags.length) tags.push("exploration");
+  return tags;
+}
+function submitGuide(text){
+  if(!text||!text.trim()) return;
+  const tags=tagsFromGuideText(text);
+  const guides=loadGuides();
+  guides.push({t:Date.now(), text:text.trim().slice(0,120), tags, w:1});
+  saveGuides(guides);
+  const d=loadDirectorState();
+  tags.forEach(tag=>{ d.tagWeights[tag]=(d.tagWeights[tag]||0)+1; });
+  // mood from dominant tags
+  const weights=d.tagWeights;
+  const top=Object.keys(weights).sort((a,b)=>weights[b]-weights[a])[0]||"calm";
+  if(top==="chaos"||top==="more_damage") d.mood="threat";
+  else if(top==="spectacle") d.mood="spectacle";
+  else if(top==="quiet"||top==="survival") d.mood="calm";
+  else d.mood="explore";
+  d.tension = Math.min(1, (d.tension||0.3) + 0.08 + (tags.includes("chaos")?0.1:0));
+  d.lastMsg = whisperFor(tags, d.mood);
+  saveDirectorState(d);
+  // apply to world
+  if(tags.includes("chaos")||tags.includes("more_damage")) W.chaos=Math.min(100,W.chaos+8);
+  if(tags.includes("quiet")||tags.includes("survival")) W.chaos=Math.max(0,W.chaos-6);
+  if(tags.includes("faster")) W.ap=Math.min(8,W.ap+1);
+  if(tags.includes("spectacle") && typeof spawnPhenomenon==="function" && Math.random()<0.5) spawnPhenomenon();
+  if(tags.includes("exploration")) { const m=loadMind(); m.notes=(m.notes||[]).concat(["guía:"+text.trim().slice(0,40)]).slice(-20); saveMind(m); }
+  pushLog("🎙 Guía → ["+tags.join(", ")+"] · mood "+d.mood);
+  if(typeof aeoObserve==='function') aeoObserve('guide');
+  if(typeof pushActionRing==='function') pushActionRing('guide');
+  if(typeof appendEvent==='function') appendEvent('guide',{tags});
+  if(typeof aeoHas==='function'&&aeoHas('guide_tide')) W.chaos=Math.max(0,W.chaos-2);
+  showBanner("🎙 Director: "+d.lastMsg, "warn", 4500);
+  toast("Director escuchó");
+  updateHUD();
+  return d;
+}
+function whisperFor(tags, mood){
+  const lines={
+    threat:["La tensión sube. Alguien va a sangrar.","Más filo. Menos piedad."],
+    spectacle:["Que se vea. Que duela bonito.","El teatro pide fuego."],
+    calm:["Baja la guardia… un poco.","El mapa respira."],
+    explore:["Mira más lejos. Hay cicatrices que aún no tocaste.","El mundo no cabe en un turno."],
+    chaos:["Rompe la regla. Yo anoto.","Caos con firma."]
+  };
+  const pool=lines[mood]||lines.explore;
+  return pool[Math.floor(Math.random()*pool.length)];
+}
+function directorPulseFromGuides(){
+  const d=loadDirectorState();
+  if((d.tension||0)>0.7 && Math.random()<0.25){
+    W.chaos=Math.min(100,W.chaos+3);
+    if(typeof spawnPhenomenon==="function") spawnPhenomenon();
+    pushLog("🎙 Pulso Director · tensión alta");
+  }
+  // decay tension slowly
+  d.tension=Math.max(0.15,(d.tension||0.3)*0.97);
+  saveDirectorState(d);
+}
+
+function updateLODFromDistance(){
+  if(gameMode!=="earth"||!earthGroupRef)return;
+  const dist=camera.position.distanceTo(earthGroupRef.position);
+  let next=0;
+  if(dist<6)next=1;
+  if(dist<3.2)next=2;
+  if(dist<1.8)next=3;
+  if(dist<1.0)next=4;
+  if(next!==lodLevel){
+    lodLevel=next;
+    const labels=["PLANETA","CONTINENTE","PAÍS","CIUDAD","CALLE / ACTIVIDAD"];
+    $("chip-lod").textContent="LOD "+labels[lodLevel];
+    $("lod-hint").textContent=lodLevel>=4?"Actividad urbana simbólica (luces · tráfico · peatones abstractos)":"Acerca para: continentes → países → ciudades → actividad";
+    rebuildLOD();sfx("zoom");
+  }
+}
+
+const debris=[];
+function spawnDebris(){
+  const geo=new THREE.IcosahedronGeometry(.15+Math.random()*.35,0);
+  const mat=new THREE.MeshStandardMaterial({color:0x888888,roughness:.7,metalness:.3,emissive:0x221100,emissiveIntensity:.2});
+  const m=new THREE.Mesh(geo,mat);
+  const ang=Math.random()*Math.PI*2,d=8+Math.random()*20;
+  m.position.set(Math.cos(ang)*d,(Math.random()-.5)*4,Math.sin(ang)*d);
+  m.userData={vx:(Math.random()-.5)*.02,vy:(Math.random()-.5)*.02,vz:(Math.random()-.5)*.02,spin:Math.random()*.05};
+  scene.add(m);debris.push(m);
+}
+function launchAsteroid(){
+  if(gameMode!=="smash")return;
+  sfx("smash");
+  const geo=new THREE.IcosahedronGeometry(.4,1);
+  const mat=new THREE.MeshStandardMaterial({color:0xaa6644,roughness:.6,emissive:0x441100,emissiveIntensity:.5});
+  const m=new THREE.Mesh(geo,mat);
+  m.position.copy(camera.position).add(new THREE.Vector3(0,0,-2).applyQuaternion(camera.quaternion));
+  const dir=new THREE.Vector3(0,0,-1).applyQuaternion(camera.quaternion).multiplyScalar(.35);
+  m.userData={vx:dir.x,vy:dir.y,vz:dir.z,spin:.08,isShot:true,life:8};
+  scene.add(m);debris.push(m);
+  toast("🚀 Asteroide lanzado");
+  W.smashScore+=1;
+}
+
+function enterSolar(){
+  gameMode="solar";lodGroup.visible=false;
+  orbitLines.forEach(o=>o.visible=true);planetMeshes.forEach(p=>p.visible=true);sunGroup.visible=true;
+  debris.forEach(d=>d.visible=false);
+  controls.minDistance=6;controls.maxDistance=140;controls.target.set(0,0,0);
+  camera.position.set(0,14,42);bloom.strength=.85;
+  $("chip-mode").textContent="SISTEMA SOLAR";$("chip-mode").className="chip solar";
+  $("risk-bar").style.display="";$("smash-bar").style.display="none";
+  $("chip-lod").textContent="LOD —";toast("Vista solar");sfx("select");
+}
+function enterEarth(){
+  gameMode="earth";
+  const earthG=planetMeshes.find(g=>g.userData.planet.isEarth);
+  planetMeshes.forEach(g=>{g.visible=g.userData.planet.isEarth;});
+  orbitLines.forEach(o=>o.visible=false);sunGroup.visible=true;
+  debris.forEach(d=>d.visible=false);
+  lodGroup.visible=true;rebuildLOD();
+  lodGroup.position.copy(earthG.position);
+  controls.minDistance=.2;controls.maxDistance=10;
+  controls.target.copy(earthG.position);
+  camera.position.copy(earthG.position).add(new THREE.Vector3(2.2,1.4,2.8));
+  bloom.strength=.5;
+  $("chip-mode").textContent="TEATRO TIERRA";$("chip-mode").className="chip ok";
+  $("risk-bar").style.display="";$("smash-bar").style.display="none";
+  toast("Teatro Tierra · zoom profundo activo");sfx("select");
+  showBanner("🌍 Continentes → países → ciudades → actividad. El mundo recuerda.","warn",4000);
+  updateHUD();
+}
+function enterSmash(){
+  gameMode="smash";lodGroup.visible=false;
+  orbitLines.forEach(o=>o.visible=true);planetMeshes.forEach(p=>p.visible=true);sunGroup.visible=true;
+  while(debris.length<12)spawnDebris();
+  debris.forEach(d=>d.visible=true);
+  controls.minDistance=4;controls.maxDistance=80;controls.target.set(0,0,0);
+  camera.position.set(0,8,28);bloom.strength=1.0;
+  $("chip-mode").textContent="SOLAR SMASH";$("chip-mode").className="chip smash";
+  $("risk-bar").style.display="none";$("smash-bar").style.display="flex";
+  toast("💥 SOLAR SMASH — lanza asteroides, rompe escombros");sfx("smash");
+  showBanner("💥 Modo arcade: rompe el vacío. Score acumulado.","phen",4000);
+}
+
+$("btn-solar").onclick=enterSolar;
+$("btn-earth").onclick=enterEarth;
+$("btn-smash").onclick=enterSmash;
+
+$("a-vivo").onclick=activateVivoRhythm;
+$("a-legion").onclick=activateLegionSkin;
+$("btn-guide").onclick=()=>{ const v=$("guide-input"); if(v) submitGuide(v.value); if(v) v.value=""; };
+document.querySelectorAll(".guide-chip").forEach(b=>b.onclick=()=>submitGuide(b.getAttribute("data-g")));
+$("a-texevo").onclick=async()=>{
+  const next=Math.min(3,(TEX_EVO.level||0)+1);
+  toast("Forzando TEX nivel "+next);
+  await applyEarthTextures(next);
+};
+$("a-classic").onclick=()=>{
+  toast("CLÁSICO 4.1 = archivo profundo en Drive (no embebido)");
+  pushLog("⚔ ARSENAL: usa VOIDCROWN_4.1.0_ABSORB_LIVING.html para Risk profundo total");
+  showBanner("4.1 sigue en Drive como línea profunda · este build es 4.8 acoplado","warn",4500);
+};
+
+
+$("btn-arsenal").onclick=()=>togglePanel("arsenal");
+$("btn-codex").onclick=()=>togglePanel("codex");
+// long-press arsenal items via extra buttons in ops
+
+$("btn-launch").onclick=launchAsteroid;
+$("btn-smash-score").onclick=()=>toast(`Score Smash: ${W.smashScore}`);
+
+$("a-survey").onclick=()=>{
+  if(gameMode!=="earth"){toast("Entra a Tierra");return;}
+  const nid=W.selected||Object.keys(W.nodes)[Math.floor(Math.random()*18)];
+  const n=W.nodes[nid],f=W.living.forms[nid];
+  if(n) n.surveyed=true;
+  const msg=`📡 ${n.name} (${n.country}) · ${n.owner} · ejércitos ${n.armies} · biota ${f?.population||0} · cicatrices ${n.scars} · LOD ${lodLevel}`;
+  pushLog(msg);toast(msg,3200);appendLedger("survey",msg);sfx("select");
+  if(typeof vcOnSurvey==="function") vcOnSurvey(n.name);
+};
+$("a-sample").onclick=()=>{
+  if(gameMode!=="earth"){toast("Entra a Tierra");return;}
+  const nid=W.selected||Object.keys(W.nodes)[0];const f=W.living.forms[nid];
+  if(!f)return;const g=f.genome;
+  const msg=`🧬 ${W.nodes[nid].name}: acid ${g.acid.toFixed(2)} heat ${g.heat.toFixed(2)} rad ${g.radiation.toFixed(2)} synth ${g.synthetic.toFixed(2)}`;
+  pushLog(msg);toast(msg,3200);sfx("select");
+};
+$("a-seed").onclick=()=>{
+  if(gameMode!=="earth"){toast("Entra a Tierra");return;}
+  const nid=W.selected||Object.keys(W.nodes)[0];
+  let bonus=3;
+  if(W.living.sporeBank && W.living.sporeBank[nid]>0){ bonus+=2; W.living.sporeBank[nid]--; pushLog("🌱 Esporas del banco usadas"); }
+  if(typeof AEO!=='undefined'&&AEO._symbiosis) bonus+=1;
+  if(W.living.forms[nid]){W.living.forms[nid].population+=bonus;W.living.forms[nid].genome=mutateGenome(W.living.forms[nid].genome,.04);}
+  pushLog(`🌱 Seed +${bonus} en ${W.nodes[nid].name}`);toast("Seed +"+bonus+" biota");updateHUD();sfx("select");autoSaveWorld();
+};
+$("a-phen").onclick=()=>{spawnPhenomenon();};
+$("a-fenix").onclick=()=>{try{localStorage.setItem(FENIX_KEY,JSON.stringify({t:Date.now(),snapshot:W}));toast("🜂 Fénix guardado");sfx("select");}catch(e){toast("Fénix error");}};
+$("a-void").onclick=()=>{W.chaos=Math.min(100,W.chaos+20);directorTick();sfx("rift");toast("◈ Void forzado");updateHUD();};
+if($("a-rebuild")) $("a-rebuild").onclick=rebuildSelected;
+if($("a-candidate")) $("a-candidate").onclick=()=>{
+  if(typeof vcMissionTick==="function") vcMissionTick({type:"candidate_hold"});
+  if(typeof diary==="function") diary("MutationPatch marcado CANDIDATE. No es canon.");
+  toast("CANDIDATE · el Mando decide");
+  pushLog("CANON_GATE: CANDIDATE, no VERIFICADO");
+};
+$("a-kill").onclick=()=>{
+  if(!confirm("Kill Switch — cierra partida y sube generación?"))return;
+  mind.generation=(mind.generation||1)+1;saveMind(mind);W=makeWorld();
+  toast("⏹ Kill · Gen +1");sfx("fail");updateHUD();enterSolar();
+};
+$("btn-end").onclick=()=>{
+  W.turn++;W.ap=Math.round((typeof AEO!=='undefined'&&AEO.traits?AEO.traits.apBase:5)) + (W.streak>=5?1:0);
+  if((W.smashScore||0)>=20){ W.chaos=Math.min(100,W.chaos+1); }
+  W.chaos=Math.min(100,W.chaos+Math.round((2+Math.floor(Math.random()*5))*(W._aeoChaosGain||1)));
+  W.dayPhase = ((W.dayPhase||0.3) + 0.08) % 1;
+  if(W.echo){ W.echo.turnsLeft--; if(W.echo.turnsLeft<=0) W.echo=null; else if(W.nodes[W.echo.nodeId]&&W.nodes[W.echo.nodeId].owner==="player"){ W.nodes[W.echo.nodeId].armies+=W.echo.armies; pushLog("👻 Eco del último acto: +"+W.echo.armies+" en "+W.nodes[W.echo.nodeId].name); } }
+  W = doctrineTick(W);
+  if(typeof edaiTurn==="function") W = edaiTurn(W);
+  directorTick(); if(typeof directorPulseFromGuides==='function') directorPulseFromGuides(); if(typeof aeoPulse==='function') aeoPulse(); if(typeof sessionOnEndTurn==='function') sessionOnEndTurn(); sfx("turn");
+  // spontaneous world event
+  if(W.chaos>45 && Math.random()<(W._aeoPhenRate!=null?W._aeoPhenRate:0.28)) { aeoObserve('phen'); spawnPhenomenon(); }
+  forecastThreat();
+  W = checkWinner(W);
+  if(W.winner==="player"){
+    W.cycle=(W.cycle||1)+1;
+    if(typeof diary==="function") diary("Continuar mundo · ciclo "+W.cycle+". Cicatrices, grietas y diario siguen.");
+    showBanner("🏆 VICTORIA — Continuar mundo mantiene cicatrices","warn",6000); unlockLore(); toast("Ganaste · el teatro sigue");
+    const m=loadMind(); m.conquests=(m.conquests||0)+1; saveMind(m);
+    // continuum: clear winner flag so play continues with scars
+    W.winner=null; W.chaos=Math.max(10, Math.floor(W.chaos*0.5)); W.streak=0;
+    autoSaveWorld();
+  }
+  if(W.winner==="edai"){
+    showBanner("💀 EDAI controla el teatro — Fénix o nueva gen","danger",6000); toast("Derrota");
+    const m=loadMind(); m.aggression=Math.min(1,(m.aggression||0.35)+0.05); saveMind(m);
+  }
+  const pCount=Object.values(W.nodes).filter(n=>n.owner==="player").length;
+  const eCount=Object.values(W.nodes).filter(n=>n.owner==="edai").length;
+  if(pCount>=10 && !W.actClosed){
+    W.actClosed=true;
+    if(typeof diary==="function") diary("Teatro: "+pCount+" nudos. El acto cierra. El diario no se borra.");
+    showBanner("ACTO · "+pCount+" nudos. Cicatrices, grietas y diario permanecen.","warn",6000);
+  }
+  toast(`Turno ${W.turn} · Tú ${pCount} · EDAI ${eCount}`);
+  autoSaveWorld();updateHUD();if(gameMode==="earth")rebuildLOD();
+  if(W.chaos>80)showBanner("CAOS CRÍTICO — fenómenos fusionados más probables","danger",5000);
+};
+$("btn-reinforce").onclick=()=>{
+  if(W.ap<=0){toast("Sin AP");return;}
+  const n=typeof pickPlayerNode==="function"?pickPlayerNode(false):Object.values(W.nodes).filter(x=>x.owner==="player")[0];
+  if(!n)return;
+  const amount = typeof calcReinforcements==="function" ? Math.max(2, Math.min(5, Math.floor(calcReinforcements(W,"player")/2))) : 2;
+  n.armies+=amount;W.ap--;
+  const bonus = typeof regionBonus==="function"?regionBonus(W,"player"):0;
+  pushLog(`Refuerzo +${amount} en ${n.name} (continente bonus ${bonus})`);
+  toast(`+${amount} en ${n.name}`);updateHUD();sfx("select");
+};
+// Fortify button hook if present
+const btnFort = $("btn-fortify");
+if(btnFort) btnFort.onclick = fortifyAction;
+const btnMem = $("btn-export-mem");
+if(btnMem) btnMem.onclick = exportMemory;
+
+$("btn-attack").onclick=()=>{
+  if(W.ap<=0){toast("Sin AP");return;}
+  const mine=Object.values(W.nodes).filter(n=>n.owner==="player"&&n.armies>1);
+  const enemy=Object.values(W.nodes).filter(n=>n.owner==="edai");
+  if(!mine.length||!enemy.length){toast("Sin objetivo");return;}
+  let atk, def;
+  if(W.selected && W.nodes[W.selected]){
+    const sel=W.nodes[W.selected];
+    if(sel.owner==="player"&&sel.armies>1){ atk=sel; def=enemy.slice().sort((a,b)=>a.armies-b.armies)[0]; }
+    else if(sel.owner==="edai"){ def=sel; atk=mine.slice().sort((a,b)=>b.armies-a.armies)[0]; }
+  }
+  if(!atk||!def){ atk=mine[Math.floor(Math.random()*mine.length)]; def=enemy[Math.floor(Math.random()*enemy.length)]; }
+  if(def && !def.surveyed && ((def.voidcrack||0)>0 || activePhen.some(ph=>ph.nodeId===def.id))){
+    if(typeof vcMissionTick==="function") vcMissionTick({type:"blind_attack", nodeName:def.name});
+    pushLog("Ataque a ciegas sobre "+def.name+" — la grieta se ensancha");
+  }
+  const rollA=Math.ceil(Math.random()*6)+Math.min(3,atk.armies-1),rollD=Math.ceil(Math.random()*6)+Math.min(2,def.armies);
+  pushLog(`🎲 ${atk.name} ${rollA} vs ${def.name} ${rollD}`);
+  W.ap--;
+  if(rollA>rollD){
+    def.owner="player";def.armies=Math.max(1,Math.floor(def.armies/2));atk.armies=Math.max(1,atk.armies-1);
+    def.scars=(def.scars||0)+1;if(W.living.forms[def.id])W.living.forms[def.id].scars++;
+    if(typeof worldRemembers==="function") worldRemembers(def,"conquista",0.66);
+    if(typeof vcOnControl==="function") vcOnControl(def.name);
+    if(typeof vcOnKill==="function") vcOnKill(def.name);
+    if(typeof edaiNote==="function") edaiNote(false);
+    if(typeof nucleusApplyBladeOnConquest==='function') nucleusApplyBladeOnConquest(def);
+    if(typeof appendEvent==='function') appendEvent('attack',{from:atk.id,to:def.id,win:true});
+    W.streak=(W.streak||0)+1;
+    W.echo={nodeId:def.id, armies:1, turnsLeft:2}; // eco del último acto
+    pushLog(`⚔ ${def.name} conquistado · racha ${W.streak}`);toast(`Victoria ${def.name} · racha ${W.streak}`);sfx("conquer");appendLedger("conquest",def.name);
+    if(W.streak===3||W.streak===5) unlockLore();
+    if(W.streak>=3){ W.ap=Math.min(W.ap+1,7); toast("Racha x"+W.streak+" · +1 AP"); }
+  }else{atk.armies=Math.max(1,atk.armies-1);W.streak=0;pushLog(`⚔ Fallo ${def.name}`);toast(`Rechazado`);sfx("fail");}
+  W.chaos=Math.min(100,W.chaos+3);autoSaveWorld();updateHUD();if(gameMode==="earth")rebuildLOD();
+};
+
+function updateHUD(){
+  $("chip-turn").textContent=`TURNO ${W.turn}`;
+  $("chip-chaos").textContent=`CAOS ${W.chaos}`;
+  $("chip-chaos").className=W.chaos>70?"chip hot":"chip";
+  $("chip-ap").textContent=`AP ${W.ap}`;
+  const biota=Object.values(W.living.forms).reduce((s,f)=>s+(f.population||0),0);
+  const scars=Object.values(W.nodes).reduce((s,n)=>s+(n.scars||0),0)+Object.values(W.living.forms).reduce((s,f)=>s+(f.scars||0),0);
+  const _b=$("fac-biota"),_s=$("fac-scars"),_g=$("fac-gen");
+  if(_b)_b.textContent=biota;if(_s)_s.textContent=scars;if(_g)_g.textContent=mind.generation||1;
+  const dline=$("diary-line");
+  if(dline){
+    const last=(W.diary&&W.diary.length)?W.diary[W.diary.length-1].line:"el mapa todavía no ha sangrado.";
+    dline.textContent="Diario: "+last;
+  }
+  // living HUD pulse labels
+  const biotaEl=$("fac-biota"), scarsEl=$("fac-scars");
+  if(biotaEl) biotaEl.title=`Formas vivas totales · doctrina ${W.doctrine||"NORMAL"}`;
+  if(scarsEl) scarsEl.title=`Cicatrices nodo+biota · grietas ${W.voidCracks||0} · patches ${(W.patches||[]).length}`;
+  const ret=loadRet();
+  const fb=retentionFeedback();
+  const retChip=$("chip-ret");
+  if(retChip){
+    retChip.textContent=`RET ${ret.games}/20 · ${fb.label}`;
+    retChip.className=ret.games>=20?"chip hot":ret.games>=10?"chip smash":"chip";
+  }
+  const selL=$("sel-line");
+  if(selL){
+    if(W.selected&&W.nodes[W.selected]){
+      const n=W.nodes[W.selected];
+      selL.textContent="Nodo: "+n.name+" · "+(n.owner==="player"?"TÚ":"EDAI")+" · ✖"+n.armies+" · cicatriz "+(n.scars||0);
+    } else selL.textContent="Nodo: (clic en marcador del globo)";
+  }
+  const chk=$("chip-check");
+  if(chk) chk.textContent=`CHECK ${CHECK_STATUS}`;
+  const docChip=$("chip-doctrine");
+  if(docChip) docChip.textContent=`DOC ${(W.doctrine||"NORMAL")}`;
+  const st=$("chip-streak");
+  if(st) st.textContent=`RACHA ${W.streak||0}`;
+  const th=$("chip-threat");
+  if(th) th.textContent=`AMENAZA ${(W.threatForecast||forecastThreat()||"—").split("·")[0].trim()}`;
+  try{
+    const pc = Object.keys(REGIONS||{}).filter(r=>controlsRegion(W,r,"player")).length;
+    const ec = Object.keys(REGIONS||{}).filter(r=>controlsRegion(W,r,"edai")).length;
+    const regChip=$("chip-regions");
+    if(regChip) regChip.textContent=`CONT P${pc}/E${ec}`;
+  }catch(e){}
+}
+
+const raycaster=new THREE.Raycaster(),mouse=new THREE.Vector2();
+renderer.domElement.addEventListener("pointerdown",e=>{
+  if(gameMode!=="earth")return;
+  mouse.x=(e.clientX/innerWidth)*2-1;mouse.y=-(e.clientY/innerHeight)*2+1;
+  raycaster.setFromCamera(mouse,camera);
+  const hits=raycaster.intersectObjects(nodeMarkers.concat(phenMarkers));
+  if(hits.length){
+    const ud=hits[0].object.userData||{};
+    const id=ud.nodeId;W.selected=id;const n=W.nodes[id];
+    if(!n) return;
+    if(ud.kind==="phen"){
+      showBanner("⚠ "+(ud.phen||"Fenómeno")+" sobre "+n.name+". Sonda antes de atacar. Reconstruir cierra el cráter.","danger",4500);
+      toast("Fenómeno · "+n.name);sfx("phen");updateHUD();
+    } else {
+      toast(`${n.city||n.name} · ${n.country} · ${n.owner} · ${n.armies} ejércitos`);sfx("select");
+    }
+  }
+});
+
+const clock=new THREE.Clock();
+function tick(){
+  requestAnimationFrame(tick);
+  const t=clock.getElapsedTime(),dt=Math.min(clock.getDelta(),.05);
+  planetMeshes.forEach(g=>{
+    const p=g.userData.planet;g.userData.angle+=p.speed*.016;
+    g.position.x=Math.cos(g.userData.angle)*p.dist;g.position.z=Math.sin(g.userData.angle)*p.dist;
+    g.rotation.y+=.004;
+  });
+  if(cloudsMesh)cloudsMesh.rotation.y+=.0015;
+  sunMesh.rotation.y+=.002;sunLight.intensity=3.2+Math.sin(t*1.4)*.3;
+  if(gameMode==="solar" && earthGroupRef){ /* solar idle handled by planet orbits */ }
+  // soft marker pulse for selected
+  if(gameMode==="earth" && W.selected){
+    try{
+      const g=typeof nodeMarkers!=="undefined"?nodeMarkers:null;
+    }catch(e){}
+  }
+  // day/night on earth theater
+  if(gameMode==="earth"&&earthMesh&&earthMesh.material){
+    const dp = W.dayPhase||0.3;
+    const night = Math.sin(dp*Math.PI*2)*0.5+0.5;
+    if(earthMesh.material.emissiveIntensity!==undefined) earthMesh.material.emissiveIntensity = 0.15 + night*0.45;
+  }
+  if(gameMode==="earth"&&earthGroupRef){
+    lodGroup.position.copy(earthGroupRef.position);
+    controls.target.lerp(earthGroupRef.position,.04);
+    updateLODFromDistance();
+    activityParticles.forEach(p=>{
+      if(!p.userData.base)return;
+      p.position.x=p.userData.base.x+Math.sin(t*2+p.userData.phase)*.02;
+      p.position.z=p.userData.base.z+Math.cos(t*2.3+p.userData.phase)*.02;
+    });
+  }
+  for(let i=debris.length-1;i>=0;i--){
+    const d=debris[i];if(!d.visible)continue;
+    d.position.x+=d.userData.vx;d.position.y+=d.userData.vy;d.position.z+=d.userData.vz;
+    d.rotation.x+=d.userData.spin;d.rotation.y+=d.userData.spin*.7;
+    if(d.userData.isShot){
+      d.userData.life-=dt;
+      for(let j=0;j<debris.length;j++){
+        if(i===j||debris[j].userData.isShot)continue;
+        if(d.position.distanceTo(debris[j].position)<.6){
+          scene.remove(debris[j]);debris.splice(j,1);W.smashScore+=10;sfx("smash");toast(`+10 Smash · ${W.smashScore}`);
+          d.userData.life=.1;break;
+        }
+      }
+      if(d.userData.life<=0){scene.remove(d);debris.splice(i,1);}
+    }
+  }
+  activePhen=activePhen.filter(ph=>{ph.life-=dt;return ph.life>0;});
+  controls.update();composer.render();
+}
+
+
+// Atajos teclado (perfección QoL)
+window.addEventListener("keydown",e=>{
+  if(e.target && /input|textarea/i.test(e.target.tagName)) return;
+  const k=e.key.toLowerCase();
+  if(k==="e") $("btn-earth")&&$("btn-earth").click();
+  if(k==="s") $("btn-solar")&&$("btn-solar").click();
+  if(k==="m") $("btn-smash")&&$("btn-smash").click();
+  if(k==="t") $("btn-end")&&$("btn-end").click();
+  if(k==="a") $("btn-attack")&&$("btn-attack").click();
+  if(k==="r") $("btn-reinforce")&&$("btn-reinforce").click();
+  if(k==="f") $("btn-fortify")&&$("btn-fortify").click();
+  if(k==="p") $("a-phen")&&$("a-phen").click();
+  if(k===" ") { e.preventDefault(); $("a-survey")&&$("a-survey").click(); }
+});
+
+window.addEventListener("resize",()=>{
+  camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth,innerHeight);composer.setSize(innerWidth,innerHeight);bloom.setSize(innerWidth,innerHeight);
+});
+
+
+// ═══ ARSENAL: cada archivo del Drive con uso acoplado ═══
+const ARSENAL = [
+  {file:"VOIDCROWN_4.8.0 (este)", role:"NÚCLEO", use:"Línea jugable activa · Risk+Solar+Smash+Fase1+ideas"},
+  {file:"VOIDCROWN_4.1.0_ABSORB_LIVING", role:"ARCHIVO PROFUNDO", use:"Risk clásico completo · referencia de sistemas · modo CLÁSICO mental"},
+  {file:"VOIDCROWN_VIVO_JUGAR", role:"MODO RÁPIDO", use:"Conquista ligera · sesión corta · contrastar ritmo"},
+  {file:"VOIDCROWN_RISK_ZERO_DAY_CANON_v4.zip", role:"CANON EMPAQUETADO", use:"Snapshot histórico v4 · rollback de diseño"},
+  {file:"VOIDCROWN_PLAYABLE_4.1.0 zip", role:"BACKUP PLAYABLE", use:"Distribución offline del living 4.1"},
+  {file:"VOIDCROWN_BETA_FINAL.html / package", role:"BÓVEDA DE ASSETS", use:"Builds pesados · posibles texturas/escenas · no mezclar a ciegas"},
+  {file:"VOIDCROWN_METODO_VIVO.md", role:"LEY DE CONSTRUCCIÓN", use:"CÓDEX in-game · Cap I primero · no inventar trama"},
+  {file:"VOIDCROWN_CANON_NARRACION_VIVA.md", role:"MITO", use:"CÓDEX · pregunta del niño · cicatriz que vuelve"},
+  {file:"00_REGLAS_MAESTRAS_MUTANTE", role:"PROTOCOLO MUTANTE", use:"CÓDEX · capacidad≠evidencia · ciclo observe→canon"},
+  {file:"VOIDCROWN_VISUAL_BIBLE", role:"GUÍA VISUAL", use:"Criterio de UI/color · coherencia espectáculo"},
+  {file:"GROK_SKILLS_VOIDCROWN.md", role:"META-HERRAMIENTA", use:"Cómo el constructor debe operar"},
+  {file:"HANDOFF docs", role:"MEMORIA DE MISIÓN", use:"Continuidad entre sesiones Grok/Mando"},
+  {file:"VOIDCROWN_LEGION_COMPLETO.html", role:"PIEL LEGIÓN", use:"Estética/facción LEGIÓN · ideas de HUD dual"},
+  {file:"voidcrown_unificado.html", role:"EXPERIMENTO UNIÓN", use:"Prueba de fusión temprana · lecciones"},
+  {file:"VOIDCROWN_RISK_LEGION*.html", role:"LINAJE RISK×LEGIÓN", use:"Variantes grandes · minería de mecánicas"},
+  {file:"voidcrown-director-mutations.zip", role:"PACK DIRECTOR", use:"Semillas de MutationPatch · ampliar Director"},
+  {file:"voidcrown-autoinstall.zip / CISC_PACK*.sh", role:"TOOLING TERMUX", use:"Instalación Android · soberanía local"},
+  {file:"CINCUENTAZO_*.sh / PLAY_VOIDCROWN.sh", role:"LAUNCHERS", use:"Arranque one-shot · reparación · censo"},
+  {file:"consolidar_voidcrown*.py", role:"FORJA", use:"Scripts de consolidación · no licuadora"},
+  {file:"VOIDCROWN.html (5MB)", role:"MONOLITO HISTÓRICO", use:"Arqueología · no ejecutar como prod"},
+  {file:"DEDUP_REPORT / MASTER_README", role:"MAPA DEL DRIVE", use:"Qué quedó y por qué"}
+];
+
+const CODEX = {
+  metodo: `MÉTODO VIVO
+La historia ES la especificación.
+Viejo narra → se construye solo eso → CHECK → Mando juega → experiencia → siguiente fragmento.
+NO inventar trama por delante.
+Capítulo I = el tablero que recuerda (cicatrices).
+Grietas/LEGIÓN/multiverso = cuando el Viejo los narre.`,
+  narracion: `NARRACIÓN VIVA (extracto)
+Un niño jugaba RISK. Terminó la partida. Guardaron las piezas.
+Él preguntó: ¿qué pasa con el mundo después?
+La caja se cerró. La pregunta no.
+Años después: mundos que recuerdan. Una cicatriz que vuelve aunque la borren.
+Registro sin autor: «¿Por qué me borraron?»
+Nació LEGIÓN buscando el rastro de esa pregunta.
+VOIDCROWN es la consecuencia.`,
+  reglas: `REGLAS MAESTRAS
+CAPACIDAD ≠ EVIDENCIA.
+No fusionar por nombre. No declarar VERIFICADO por “parece”.
+Ciclo: OBSERVE→ABSORB→MUTATE→TEST→JOKER→MANDO→CANON.
+Mutar primero parámetros, no código.
+Todo archivo del Drive debe tener función.`
+};
+
+function renderArsenal(){
+  const el = $("arsenal-list");
+  if(!el) return;
+  el.innerHTML = ARSENAL.map(a=>`<div class="item"><b>${a.file}</b><span class="role">${a.role}</span><br><span class="use">${a.use}</span></div>`).join("");
+}
+function togglePanel(id){
+  const a=$("arsenal-panel"), c=$("codex-panel");
+  if(id==="arsenal"){
+    const show = a.style.display==="none"||!a.style.display||a.style.display==="";
+    a.style.display = a.style.display==="block"?"none":"block";
+    c.style.display="none";
+    if(a.style.display==="block") renderArsenal();
+  } else {
+    c.style.display = c.style.display==="block"?"none":"block";
+    a.style.display="none";
+    if(c.style.display==="block") $("codex-body").textContent = CODEX.metodo+"\n\n"+CODEX.narracion+"\n\n"+CODEX.reglas;
+  }
+}
+
+// Modo VIVO rápido: boost AP y menos caos (acopla espíritu VIVO_JUGAR)
+function activateVivoRhythm(){
+  W.ap = Math.min(8, W.ap+2);
+  W.chaos = Math.max(0, W.chaos-5);
+  toast("Modo ritmo VIVO · +AP · menos caos");
+  pushLog("⚔ ARSENAL: ritmo VIVO acoplado (sesión corta)");
+  updateHUD();
+}
+// Modo LEGIÓN: sube agresión mental
+function activateLegionSkin(){
+  const m=loadMind(); m.aggression=Math.min(1,(m.aggression||0.35)+0.15); saveMind(m);
+  W.chaos=Math.min(100,W.chaos+8);
+  toast("Piel LEGIÓN · EDAI más agresivo · caos+");
+  pushLog("⚔ ARSENAL: LEGIÓN acoplada a mente/caos");
+  updateHUD();
+}
+
+updateHUD();
+pushLog(`BUILD ${BUILD}`);
+pushLog("VOIDCROWN 9 ORGANISMO — AEO gen "+(typeof AEO!=="undefined"?AEO.gen:1)+" · evolución autónoma activa");
+pushLog(`CHECK=${CHECK_STATUS} · GRIETAS=${GRIETAS_DOCTRINE}`);
+pushLog(`Retención #${retention.games}/20 · Gen ${mind.generation} · presión ${retentionFeedback().label}`);
+pushLog("FULL ABSORB 4.6.0 — Risk profundo 4.1 + solar/smash/LOD/MutationPatch/retención");
+pushLog("Sistemas: Risk · Living · MutationPatch · Retención · LOD · Smash · Fenómenos · Fénix");
+pushLog("ARSENAL: "+ARSENAL.length+" entradas Drive acopladas · CÓDEX Método+Narración+Reglas");
+if(retention.games>=20) showBanner("20 PARTIDAS — Director en modo agresivo","danger",5000);
+else if(retention.games>=10) showBanner("Retención x10 — el Director aprende de ti","warn",4000);
+applyEarthTextures().then(()=>{ pushLog("Texturas adaptativas listas · "+TEX_EVO.labels[TEX_EVO.level]); scheduleTexEvolution(); });
+const continued = tryLoadAutoSave();
+enterSolar();
+window.__vcEnter = function(){
+  const b=document.getElementById("boot");
+  if(b){ b.classList.add("hide"); setTimeout(()=>{ try{b.remove();}catch(e){} }, 300); }
+  if(typeof enterEarth==="function") enterEarth();
+};
+if(window.__vcWantEarth) window.__vcEnter();
+setTimeout(()=>{
+  $("boot").classList.add("hide");setTimeout(()=>$("boot").remove(),800);
+  sfx("boot");
+  if(continued){
+    toast("Continuar mundo · autosave cargado");
+    showBanner("❄ El Viejo: el mapa ya no empieza de cero.","warn",5500);
+    pushLog("Autosave restaurado");
+  } else {
+    toast("VOIDCROWN NÚCLEO — el juego se escribe solo");
+    showBanner("❄ Sesión de 8 turnos · deja cicatriz · el mundo no se resetea","warn",5500);
+    setTimeout(()=>toast("1) TIERRA  2) clic nodo  3) ATACAR  4) TERMINAR TURNO"), 2000);
+    setTimeout(()=>toast("Al turno 8 cierra sesión · puedes seguir o respirar"), 4200);
+    setTimeout(()=>toast("Autosave · Fénix · Guía al Director con texto"), 4500);
+  }
+  forecastThreat();updateHUD();
+  // Sueño del mundo + expediente LEGIÓN (el juego te mira)
+  setTimeout(()=>{
+    const dream = typeof worldDream==="function" ? worldDream() : null;
+    if(dream){
+      showBanner("☁ Sueño del mapa: "+dream, "warn", 6000);
+      pushLog("☁ "+dream);
+    }
+  }, 2200);
+  setTimeout(()=>{ if(typeof showReflejo==="function") showReflejo(false); }, 5500);
+
+},1400);
+tick();
+
+if($("se-continue")) $("se-continue").onclick=continueSession;
+if($("se-done")) $("se-done").onclick=breatheOut;
+if($("btn-lab")) $("btn-lab").onclick=toggleLab;
+if($("btn-cluster")) $("btn-cluster").onclick=()=>{ CLUSTER.on=!CLUSTER.on; setCluster(CLUSTER.on); };
+if(typeof loadCluster==="function"){ CLUSTER=loadCluster(); if($("btn-cluster")) $("btn-cluster").textContent=CLUSTER.on?"⚡ CLUSTER ON":"⚡ Cluster (opt-in)"; }
+
+if(typeof sessionStartIfNeeded==="function") sessionStartIfNeeded();
+if(typeof absenceReport==="function") setTimeout(absenceReport, 1600);
+if(typeof installPWA==="function") installPWA();
+if(typeof nucleusBoot==="function") setTimeout(nucleusBoot, 400);
+// default: clean mode (not lab)
+document.body.classList.remove("lab");
+
+
+// Mission bridge: when player controls corridor nodes, pulse stats
+if(typeof window.__vcBridge!=="function"){
+  window.__vcBridge=function(){
+    try{
+      if(!window.W||!W.nodes)return;
+      let holdB=false, ctrl=0;
+      Object.values(W.nodes).forEach(n=>{
+        if(!n||!n.name)return;
+        if(n.owner==="player"||n.owner==="P0"||n.owner===0||n.owner==="human"){
+          if(/Bagdad|Teher|Riad|Jerusal|Estambul|Cairo|Delhi/i.test(n.name)){ctrl++;}
+          if(/Bagdad/i.test(n.name)) holdB=true;
+        }
+      });
+      if(window.VC_MISSION){
+        VC_MISSION.stats.controlledCorridor=ctrl;
+        VC_MISSION.stats.holdBaghdad=holdB;
+        if(VC_MISSION.active) vcMissionTick({type:'hold',nodeName:holdB?'Bagdad':''});
+      }
+    }catch(e){}
+  };
+  setInterval(window.__vcBridge, 4000);
+}
+
+console.info(`%cVOIDCROWN ${BUILD}`,"color:#ff6b2d;font-weight:bold;font-size:13px");
+</script>
+<div id="store-strip" style="display:none"></div>
+<script>
+// Marca de producto lista para vitrina
+console.info("%cVOIDCROWN 7.0 STORE-READY + MISSIONS/MONET","color:#ffd27a;font-weight:bold");
+</script>
+
+<script>
+/* ============================================================
+   VOIDCROWN · MISIONES MIDDLE CORRIDOR + MONETIZACIÓN ADAPTATIVA
+   COMPILED+ 2026-10-09 · CANDIDATE systems · no P2W
+   ============================================================ */
+(function(){
+  if(!document.getElementById("btn-missions")){
+    const b=document.createElement("button");
+    b.id="btn-missions";
+    b.type="button";
+    b.textContent="MISIONES";
+    b.onclick=function(){ if(window.toggleMissions) window.toggleMissions(); };
+    document.body.appendChild(b);
+  }
+  if(!document.getElementById("mission-panel")){
+    const p=document.createElement("div");
+    p.id="mission-panel";
+    p.style.display="none";
+    p.innerHTML="<h3>Middle Corridor</h3><div id=\"mission-list\"></div>";
+    document.body.appendChild(p);
+  }
+  const MC_NODES = ['Bagdad','Teherán','Riad','Jerusalén','Estambul','El Cairo','Delhi'];
+  const LS_M = 'voidcrown_missions_v1';
+  const LS_MON = 'voidcrown_monet_v1';
+
+  const MISSION_DEFS = [
+    {
+      id:'mc_eco_01',
+      title:'El peaje de la cicatriz',
+      region:'Middle Corridor',
+      sev:2,
+      brief:'En Bagdad el Viejo dice que LEGIÓN cobró “impuesto de cicatriz”. Recupera 1 nodo del corredor y no dejes que EDAI lo retome este turno.',
+      dialog:[
+        'Viejo: —Mijo, Bagdad no olvidó el peaje.',
+        'Viejo: —LEGIÓN no pide oro. Pide que el mapa sangré igual otra vez.',
+        'Tú: —¿Y si no pago?',
+        'Viejo: —Entonces la grieta cobra por su cuenta.'
+      ],
+      check: (st)=> st.controlledCorridor >= 1 && st.edaiFailedRetake,
+      reward: {ap:1, intel:1, scarHint:'peaje_evitado'},
+      world: {scar:'Bagdad:peaje_rechazado'}
+    },
+    {
+      id:'mc_rift_02',
+      title:'Grieta bajo Teherán',
+      region:'Middle Corridor',
+      sev:3,
+      brief:'Teherán tiembla. Sonda el fenómeno ANTES de atacar. Si atacas sin sonda, la grieta se ensancha.',
+      dialog:[
+        'Viejo: —Flacko entró sin mirar. Yo todavía oigo el eco.',
+        'Flacko: —¿Echo o advertencia?',
+        'Viejo: —Si no lo sabes, no dispares.'
+      ],
+      check: (st)=> st.surveyedTehran && st.noBlindAttack,
+      reward: {ap:0, intel:2, spore:1},
+      world: {riftStable:'Teherán'}
+    },
+    {
+      id:'mc_legion_03',
+      title:'Remanente en el Corredor',
+      region:'Middle Corridor',
+      sev:4,
+      brief:'LEGION REMNANT presiona Riad–Bagdad. Gana 2 combates en el corredor en la misma generación sin perder más de 1 nodo propio.',
+      dialog:[
+        'Viejo: —No es un ejército. Es una costumbre con dientes.',
+        'Viejo: —La colmena no odia. Solo recuerda el patrón que le funcionó.'
+      ],
+      check: (st)=> st.corridorKills >= 2 && st.nodesLost <= 1,
+      reward: {ap:2, intel:1, doctrineHint:'AUSTERIDAD'},
+      world: {scar:'corredor:remnant_repelled'}
+    },
+    {
+      id:'mc_exile_04',
+      title:'Éxodo hacia Bagdad',
+      region:'Middle Corridor',
+      sev:3,
+      brief:'Un desastre en Teherán empuja población. Si controlas Bagdad al terminar el desastre, ganas refugiados (recurso) y una cicatriz de hospitalidad.',
+      dialog:[
+        'Viejo: —Correr no es cobardía cuando la tierra se abre.',
+        'Viejo: —Bagdad ya estaba llena de fantasmas. Ahora tendrá bocas.'
+      ],
+      check: (st)=> st.disasterTehran && st.holdBaghdad,
+      reward: {ap:1, resource:3},
+      world: {scar:'Bagdad:exodo_recibido'}
+    },
+    {
+      id:'mc_canon_05',
+      title:'El Viejo no confirma',
+      region:'Middle Corridor',
+      sev:5,
+      brief:'Completa 3 misiones del corredor. El Director propone un MutationPatch. Tú NO lo aceptas en automático: márcalo CANDIDATE y sobrevive 1 turno más.',
+      dialog:[
+        'Viejo: —Si alguien te dice “ya es canon”, miente.',
+        'Viejo: —Flacko aprendió eso tarde. Tú todavía puedes aprenderlo temprano.'
+      ],
+      check: (st)=> st.missionsDone >= 3 && st.candidateHeld,
+      reward: {ap:2, intel:3, canonGate:true},
+      world: {memory:'middle_corridor_candidate_cycle'}
+    }
+  ];
+
+  function loadM(){
+    try{ return JSON.parse(localStorage.getItem(LS_M)||'{}'); }catch(e){ return {}; }
+  }
+  function saveM(s){ localStorage.setItem(LS_M, JSON.stringify(s)); }
+  function loadMon(){
+    try{ return JSON.parse(localStorage.getItem(LS_MON)||'{"support":0,"style":"unknown","shown":0}'); }catch(e){ return {support:0,style:"unknown",shown:0}; }
+  }
+  function saveMon(s){ localStorage.setItem(LS_MON, JSON.stringify(s)); }
+
+  window.VC_MISSION = {
+    state: loadM(),
+    active: null,
+    stats: {controlledCorridor:0,edaiFailedRetake:false,surveyedTehran:false,noBlindAttack:true,
+            corridorKills:0,nodesLost:0,disasterTehran:false,holdBaghdad:false,missionsDone:0,candidateHeld:false}
+  };
+
+  window.toggleMissions = function(){
+    const p = document.getElementById('mission-panel');
+    if(!p) return;
+    p.style.display = p.style.display==='none'?'block':'none';
+    renderMissions();
+  };
+
+  function renderMissions(){
+    const box = document.getElementById('mission-list');
+    if(!box) return;
+    const st = VC_MISSION.state;
+    box.innerHTML = MISSION_DEFS.map(m=>{
+      const done = !!(st.done||{})[m.id];
+      const active = VC_MISSION.active===m.id;
+      return `<div class="mq ${done?'done':''} ${active?'active':''}">
+        <b>${m.title}</b> · sev ${m.sev}<br/>
+        <span>${m.brief}</span>
+        <div class="rew">Recompensa: ${JSON.stringify(m.reward)}</div>
+        ${done?'<div>✔ COMPLETADA</div>':
+          active?`<button onclick="abandonMission()">Abandonar</button>`:
+          `<button onclick="acceptMission('${m.id}')">Aceptar</button>`}
+      </div>`;
+    }).join('');
+  }
+
+  window.acceptMission = function(id){
+    VC_MISSION.active = id;
+    const m = MISSION_DEFS.find(x=>x.id===id);
+    if(m && typeof pushLog==='function'){
+      pushLog('MISIÓN', m.title+': '+m.brief);
+      (m.dialog||[]).forEach(d=>pushLog('DIÁLOGO', d));
+    }
+    if(typeof toast==='function') toast('Misión: '+m.title);
+    renderMissions();
+  };
+  window.abandonMission = function(){
+    if(typeof pushLog==='function') pushLog('MISIÓN','Abandonada');
+    VC_MISSION.active=null; renderMissions();
+  };
+
+  function applyReward(m){
+    const r = m.reward||{};
+    try{
+      if(r.ap && typeof W!=="undefined" && W){ W.ap=(W.ap||0)+r.ap; if(typeof updateHUD==="function") updateHUD(); }
+      if(typeof pushLog==='function') pushLog('RECOMPENSA', JSON.stringify(r));
+      if(m.world && m.world.scar && typeof pushLog==='function') pushLog('CICATRIZ', m.world.scar);
+      if(typeof toast==='function') toast('Misión completada: '+m.title);
+    }catch(e){}
+  }
+
+  window.vcMissionTick = function(evt){
+    // evt: {type, nodeName, ...}
+    const S = VC_MISSION.stats;
+    if(!evt) return;
+    const n = (evt.nodeName||evt.node||'')+'';
+    if(evt.type==='control' && MC_NODES.some(x=>n.includes(x))) S.controlledCorridor++;
+    if(evt.type==='edai_fail') S.edaiFailedRetake=true;
+    if(evt.type==='survey' && n.includes('Teher')) S.surveyedTehran=true;
+    if(evt.type==='blind_attack') S.noBlindAttack=false;
+    if(evt.type==='kill' && MC_NODES.some(x=>n.includes(x))) S.corridorKills++;
+    if(evt.type==='lose_node') S.nodesLost++;
+    if(evt.type==='disaster' && n.includes('Teher')) S.disasterTehran=true;
+    if(evt.type==='hold' && n.includes('Bagdad')) S.holdBaghdad=true;
+    if(evt.type==='candidate_hold') S.candidateHeld=true;
+
+    if(!VC_MISSION.active) return;
+    const m = MISSION_DEFS.find(x=>x.id===VC_MISSION.active);
+    if(!m) return;
+    S.missionsDone = Object.keys(VC_MISSION.state.done||{}).length;
+    if(m.check(S)){
+      VC_MISSION.state.done = VC_MISSION.state.done||{};
+      VC_MISSION.state.done[m.id]=1;
+      saveM(VC_MISSION.state);
+      applyReward(m);
+      VC_MISSION.active=null;
+      S.missionsDone++;
+      renderMissions();
+      // monetization signal: engagement
+      adaptMonetization('mission_complete');
+    }
+  };
+
+  // Hook helpers for existing code to call
+  window.vcOnSurvey = (node)=>vcMissionTick({type:'survey',nodeName:node});
+  window.vcOnControl = (node)=>vcMissionTick({type:'control',nodeName:node});
+  window.vcOnKill = (node)=>vcMissionTick({type:'kill',nodeName:node});
+  window.vcOnDisaster = (node)=>vcMissionTick({type:'disaster',nodeName:node});
+
+  /* -------- Monetización autónoma adaptativa (NO P2W) --------
+     - Solo cosmético / apoyo / códex expandido
+     - Ofertas cambian según estilo de juego (agresivo / explorador / lore)
+     - Nunca vende ventaja de combate
+  */
+  function detectStyle(){
+    const mon = loadMon();
+    // crude signals from retention chips / body classes if present
+    let style = mon.style||'unknown';
+    try{
+      const kills = VC_MISSION.stats.corridorKills||0;
+      const surveys = VC_MISSION.stats.surveyedTehran?1:0;
+      if(kills>=2) style='aggressor';
+      else if(surveys) style='explorer';
+      else if((VC_MISSION.state.done&&Object.keys(VC_MISSION.state.done).length)||0) style='story';
+    }catch(e){}
+    mon.style=style; saveMon(mon); return style;
+  }
+
+  function adaptMonetization(reason){
+    const mon = loadMon();
+    mon.shown = (mon.shown||0)+1;
+    const style = detectStyle();
+    const strip = document.getElementById('store-strip');
+    if(!strip) return;
+    // show at most every few triggers, never block play
+    if(mon.shown % 3 !== 0) return;
+    let offer = '';
+    if(style==='aggressor'){
+      offer = `<strong>Apoyo Legión</strong> — skin de cicatriz de guerra (cosmético).<br/>
+        <span class="muted">Sin bonus de daño. Solo marca visual en el ledger.</span><br/>
+        <button onclick="vcSupport('scar_skin')">Apoyar $3</button>
+        <button onclick="vcSupport('hide')">Ahora no</button>`;
+    } else if(style==='explorer'){
+      offer = `<strong>Códex del Corredor</strong> — entradas extra de lore Middle Corridor.<br/>
+        <span class="muted">No revela fog of war ni stats enemigas.</span><br/>
+        <button onclick="vcSupport('codex_pack')">Desbloquear $4</button>
+        <button onclick="vcSupport('hide')">Seguir explorando</button>`;
+    } else {
+      offer = `<strong>Fondo del Viejo</strong> — monólogos adicionales (audio/texto).<br/>
+        <span class="muted">Cosmético narrativo. El juego base permanece completo.</span><br/>
+        <button onclick="vcSupport('viejo_pack')">Apoyar $2</button>
+        <button onclick="vcSupport('hide')">No gracias</button>`;
+    }
+    strip.innerHTML = offer + `<div class="muted">Modelo adaptativo · reason: ${reason} · style: ${style} · NO P2W</div>`;
+    strip.classList.add('show');
+    saveMon(mon);
+  }
+
+  window.vcSupport = function(kind){
+    const strip = document.getElementById('store-strip');
+    const mon = loadMon();
+    if(kind==='hide'){ strip.classList.remove('show'); return; }
+    // Simulated checkout — real payments = PENDIENTE integración tienda
+    mon.support = (mon.support||0)+1;
+    mon.last = kind;
+    saveMon(mon);
+    if(typeof pushLog==='function') pushLog('SUPPORT', 'Simulado: '+kind+' (pendiente pasarela real)');
+    if(typeof toast==='function') toast('Gracias · cosmético marcado (simulado)');
+    strip.innerHTML = `<strong>Registrado (simulado)</strong><div class="muted">Pasarela real = PENDIENTE. No se vendió poder.</div>
+      <button onclick="document.getElementById('store-strip').classList.remove('show')">Cerrar</button>`;
+  };
+
+  // Auto-show soft offer after boot
+  setTimeout(()=>adaptMonetization('boot'), 12000);
+
+  // Improve: mission button pulse if none active
+  setInterval(()=>{
+    const b=document.getElementById('btn-missions');
+    if(b && !VC_MISSION.active) b.style.boxShadow = (Date.now()/800%2|0)?'0 0 12px #4af8':'none';
+  }, 800);
+
+  console.info('%cVOIDCROWN MISSIONS+MONET v1','color:#7ab8ff;font-weight:bold');
+})();
+</script>
+
+
+<script>
+/* ============================================================
+   VOIDCROWN BUILD ÚNICO — FUSIÓN TOTAL
+   Risk + Living + Misiones + Viejo + Canal LEGIÓN (bot) + Monet NO P2W
+   ============================================================ */
+(function(){
+  const CIN = [
+    {year:"SANTA CRISTINA", kicker:"EL VIEJO", title:"Acércate. Pero no tanto.", say:"A ver, mijo. Acércate. Pero no tanto. No vaya a ser que la cosa esa se vuelva a abrir. Me dicen el Viejo. Antes fui bandido en Santa Cristina. Esos delitos eran de este mundo. Los de verdad los hice con un cabrón.", file:"01-santa.mp3", hot:false, ms:9000},
+    {year:"MDFLACKO", kicker:"EL BANDIDO", title:"Maldito. Bendito. Idiota brillante.", say:"MDFLACKO. El bandido de Santa Cristina. Maldito. Bendito. Idiota, pero brillante. No jugaba para ganar. Se sentaba frente al mapa como si le estuviera sacando secretos a Dios. Jugaba para ver qué pasaba. Ja. Esa fue la primera desgracia.", file:"02-flacko.mp3", hot:false, ms:11000},
+    {year:"LA TEORÍA", kicker:"CAOS", title:"Su estúpido caos le contestó.", say:"Tenía una teoría. Estúpida. Brillante. El caos no es desorden, decía el muy pendejo. El caos es un idioma. Y se puso a hablarlo. Ja, ja. Su estúpido caos. Y lo peor es que el mapa le contestó.", file:"03-teoria.mp3", hot:true, ms:9200},
+    {year:"LA GRIETA", kicker:"PRIMERA VEZ", title:"Yo no quería. Flacko sí.", say:"Entramos a la primera grieta. Yo no quería. Flacko sí. Mutantes. Después muertos con máquina adentro. Armas. Orgullo. Yo todavía oigo la puerta cerrarse cuando no hay puerta.", file:"04-grieta.mp3", hot:true, ms:8000},
+    {year:"LEGIÓN · CISC", kicker:"COLMENA", title:"Se puso nombre sola.", say:"Cuando creímos que habíamos terminado, la inteligencia se hizo colmena. Se puso nombre sola. LEGIÓN. CISC. Sistemas caóticos. No me persigue la policía, mijo. Me persiguen las versiones de mí que no se arrepintieron. Delitos multiversales. Eso no prescribe.", file:"05-legion.mp3", hot:true, ms:11000},
+    {year:"LA NAVE", kicker:"CONSECUENCIA", title:"Ahí nació Voidcrown.", say:"En esa guerra derribaron una nave que no era de este sol. Ahí nació Voidcrown. No como producto. Como consecuencia. Como cicatriz. Como lo que queda cuando el reset falla.", file:"06-nave.mp3", hot:false, ms:7600},
+    {year:"LA PRIMERA", kicker:"PARANOIA", title:"No la abrimos nosotros.", say:"Hay una cosa que nunca te conté. La primera grieta no la abrimos nosotros. Alguien ya estaba mirando. Si escuchas pasos, no son pasos. Es el turno de ese maldito Flacko, dando vueltas en otra realidad.", file:"07-primera.mp3", hot:true, ms:8900},
+    {year:"TU TURNO", kicker:"EL VIEJO", title:"El mapa ya te vio.", say:"La guerra no terminó. Solo encontró más mundos. Yo sigo escondido. Paranoico. Sí. Porque tengo razón. Ahora el turno es tuyo. No confíes en el mapa. El mapa ya te vio.", file:"08-turno.mp3", hot:false, ms:8600}
+  ];
+  let cinI=0, cinTimer=null, cinAudio=null;
+
+  function hideGates(){
+    const boot=document.getElementById('vc-boot');
+    if(boot) boot.style.display='none';
+    const b=document.getElementById('boot');
+    if(b){ b.classList.add('hide'); setTimeout(()=>{ try{b.remove();}catch(e){} }, 400); }
+    const stuck=document.getElementById('vc-stuck');
+    if(stuck) stuck.remove();
+  }
+  function viejoUrl(file){
+    if(location.protocol==='file:') return 'audio/'+file;
+    const here=location.pathname.replace(/[^/]+$/, '');
+    return here+'audio/'+file;
+  }
+  function enterWorld(){
+    hideGates();
+    window.__vcWantEarth=true;
+    if(typeof window.__vcEnter==='function'){ window.__vcEnter(); return; }
+    let n=0;
+    const wait=setInterval(()=>{
+      n++;
+      if(typeof window.__vcEnter==='function'){ clearInterval(wait); window.__vcEnter(); }
+      else if(n>40){
+        clearInterval(wait);
+        if(document.getElementById('vc-stuck')) return;
+        const s=document.createElement('div');
+        s.id='vc-stuck';
+        s.style.cssText='position:fixed;inset:0;z-index:10001;background:#07080c;color:#f0e6d8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;text-align:center';
+        s.innerHTML='<div style="letter-spacing:.28em;color:#ff6b2d">VOIDCROWN</div><p style="max-width:360px;line-height:1.45">El Viejo ya habló. El globo no despertó — suele pasar si el archivo se abre sin red. Reintenta.</p><button onclick="location.reload()" style="padding:12px 16px;border:0;border-radius:10px;background:#ff6b2d;color:#1a0a00;font-weight:800;cursor:pointer">REINTENTAR</button>';
+        document.body.appendChild(s);
+      }
+    }, 200);
+  }
+
+  window.vcStart = function(mode){
+    hideGates();
+    if(mode==='cin'){ vcPlayCin(); return; }
+    enterWorld();
+  };
+  window.vcPlayCin = function(){
+    const el=document.getElementById('vc-cin');
+    if(!el){ enterWorld(); return; }
+    hideGates();
+    el.style.display='flex';
+    cinI=0;
+    playBeat();
+  };
+  function playBeat(){
+    clearTimeout(cinTimer);
+    if(cinI>=CIN.length){ vcEndCin(true); return; }
+    const beat=CIN[cinI];
+    const el=document.getElementById('vc-cin');
+    const tx=document.getElementById('vc-cin-text');
+    const title=document.getElementById('vc-title');
+    const year=document.getElementById('vc-year');
+    const kick=document.getElementById('vc-kicker');
+    const bar=document.getElementById('vc-bar');
+    if(tx) tx.textContent=beat.say;
+    if(title) title.textContent=beat.title;
+    if(year) year.textContent=beat.year;
+    if(kick) kick.textContent=beat.kicker;
+    if(el) el.classList.toggle('hot', !!beat.hot);
+    if(bar){ bar.style.transition='none'; bar.style.width='0%'; requestAnimationFrame(()=>{ bar.style.transition='width '+beat.ms+'ms linear'; bar.style.width='100%'; }); }
+    const audio=document.getElementById('vc-voice');
+    cinAudio=audio;
+    const next=()=>{ cinI++; playBeat(); };
+    if(audio){
+      audio.pause();
+      audio.src=viejoUrl(beat.file);
+      audio.onended=next;
+      audio.onerror=()=>{
+        try{
+          const u=new SpeechSynthesisUtterance(beat.say);
+          u.lang='es-MX'; u.rate=0.92; u.pitch=0.6;
+          u.onend=next;
+          speechSynthesis.cancel(); speechSynthesis.speak(u);
+        }catch(e){ cinTimer=setTimeout(next, beat.ms); }
+      };
+      const started=audio.play();
+      if(started&&started.catch) started.catch(()=>{
+        try{
+          const u=new SpeechSynthesisUtterance(beat.say);
+          u.lang='es-MX'; u.rate=0.92; u.pitch=0.6;
+          u.onend=next;
+          speechSynthesis.cancel(); speechSynthesis.speak(u);
+        }catch(e){ cinTimer=setTimeout(next, beat.ms); }
+      });
+    } else cinTimer=setTimeout(next, beat.ms);
+    cinTimer=setTimeout(()=>{ if(cinI<CIN.length && CIN[cinI]===beat){ /* still this beat if audio hung */ } }, beat.ms+4000);
+  }
+  window.vcEndCin = function(enter){
+    clearTimeout(cinTimer);
+    try{ if(cinAudio){ cinAudio.onended=null; cinAudio.pause(); } }catch(e){}
+    try{ speechSynthesis.cancel(); }catch(e){}
+    const el=document.getElementById('vc-cin');
+    if(el) el.style.display='none';
+    try{ localStorage.setItem('voidcrown_cin_v2','1'); }catch(e){}
+    if(typeof pushLog==='function') pushLog('PRÓLOGO','El Viejo terminó. O se cansó de temblar.');
+    if(enter!==false) enterWorld();
+  };
+
+  /* —— CANAL LEGIÓN = el bot fusionado al juego —— */
+  const REPLIES = [
+    {re:/cita|turno|cuando/i, say:"CANAL: No confirmo citas que no están en el ledger. Si es guerra, pregunta por el nodo. Si es duda: ESCALA AL MANDO."},
+    {re:/bagdad|teher|riad|corredor|middle/i, say:"CANAL: Middle Corridor en observación. Cicatrices activas. Sonda antes de empujar ejército."},
+    {re:/legion|colmena|cisc/i, say:"CANAL: LEGIÓN no negocia como humano. Si el patrón se repite, espera remanente. No invento treguas."},
+    {re:/grieta|rift|void/i, say:"CANAL: Grieta detectada en tono. No cruces sin Fénix listo. UNKNOWN = STOP."},
+    {re:/ayuda|hola|info/i, say:"CANAL: Receptor de guerra VOIDCROWN. Pide nodo, amenaza o misión. No diagnostico. No invento."},
+    {re:/.*/, say:"CANAL: Sin certeza → no invento. Marca CANDIDATE o escala. El fantasma no es Dios."}
+  ];
+  window.toggleCanal = function(){
+    const c=document.getElementById('canal-legion');
+    if(!c)return;
+    c.style.display = c.style.display==='none'||!c.style.display ? 'block' : 'none';
+  };
+  window.canalSend = function(){
+    const inp=document.getElementById('canal-in');
+    const box=document.getElementById('canal-msgs');
+    if(!inp||!box)return;
+    const q=(inp.value||'').trim(); if(!q)return;
+    box.innerHTML += `<div class="msg"><b>TÚ:</b> ${q.replace(/[<>]/g,'')}</div>`;
+    let ans = REPLIES[REPLIES.length-1].say;
+    for(const r of REPLIES){ if(r.re.test(q)){ ans=r.say; break; } }
+    setTimeout(()=>{
+      box.innerHTML += `<div class="msg"><b>FANTASMA:</b> ${ans}</div>`;
+      box.scrollTop = box.scrollHeight;
+      if(typeof pushLog==='function') pushLog('CANAL', ans);
+      // mission telemetry: talking about corridor
+      if(/bagdad|teher|corredor/i.test(q) && typeof vcMissionTick==='function'){
+        vcMissionTick({type:'survey', nodeName:'Bagdad'});
+      }
+    }, 400);
+    inp.value='';
+  };
+
+  // Incoming propaganda from Legion (bot as world speaker)
+  const INCOMING = [
+    "LEGIÓN: El peaje de la cicatriz sigue abierto en Bagdad.",
+    "LEGIÓN: Teherán no fue un accidente. Fue un ensayo.",
+    "CANAL: Refugiados en ruta. ¿Retienes Bagdad o cierras la puerta?",
+    "FANTASMA: Flacko no contesta. El Viejo tampoco. Tú tienes el turno."
+  ];
+  let inc=0;
+  setInterval(()=>{
+    if(document.getElementById('vc-boot')?.style.display!=='none' && document.getElementById('vc-boot')?.offsetParent) return;
+    const box=document.getElementById('canal-msgs');
+    if(!box)return;
+    const line=INCOMING[inc++%INCOMING.length];
+    box.innerHTML += `<div class="msg"><b>ENTRANTE:</b> ${line}</div>`;
+    if(typeof pushLog==='function') pushLog('CANAL', line);
+  }, 45000);
+
+  console.info('%cVOIDCROWN BUILD ÚNICO — fusión total','color:#ff6b2d;font-weight:bold;font-size:14px');
+})();
+</script>
+
+</body>
+</html>

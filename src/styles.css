@@ -1,0 +1,120 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Oswald:wght@500;600&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #08090c;
+  --color-surface: #12141a;
+  --color-elevated: #1a1d24;
+  --color-fg: #e8e6e1;
+  --color-muted: #8b8d94;
+  --color-subtle: #5c5e66;
+  --color-accent: #c8ccd4;
+  --color-accent-fg: #08090c;
+  --color-danger: #c4453c;
+  --color-ok: #6a9b7a;
+  --color-border: color-mix(in oklab, #e8e6e1 12%, transparent);
+  --color-border-strong: color-mix(in oklab, #e8e6e1 22%, transparent);
+
+  --font-sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-display: "Oswald", "Segoe UI", system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --tracking-display: -0.03em;
+  --tracking-tight: -0.02em;
+
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --motion-micro: 80ms;
+  --motion-quick: 150ms;
+  --motion-fast: 250ms;
+  --motion-medium: 350ms;
+}
+
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  html,
+  body,
+  #app {
+    min-height: 100%;
+    height: 100%;
+    background: var(--color-bg);
+    color: var(--color-fg);
+  }
+
+  body {
+    font-family: var(--font-sans);
+    overflow: hidden;
+  }
+}
+
+.cine-scan {
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0 2px,
+    rgba(0, 0, 0, 0.18) 2px 3px
+  );
+  mix-blend-mode: multiply;
+  animation: cine-scan 7s linear infinite;
+}
+.cine-noise {
+  opacity: 0.18;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.4) 0.5px, transparent 0.5px);
+  background-size: 3px 3px;
+  animation: cine-noise 0.25s steps(2) infinite;
+}
+.cine-vignette {
+  background: radial-gradient(ellipse at center, transparent 40%, #05060a 100%);
+}
+.cine-glitch {
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0 8px,
+    rgba(255, 60, 40, 0.18) 8px 9px,
+    transparent 9px 18px,
+    rgba(80, 180, 255, 0.16) 18px 19px
+  );
+  mix-blend-mode: screen;
+  animation: cine-glitch 0.35s steps(2) infinite;
+}
+.cine-frame {
+  animation: cine-ken 18s ease-in-out infinite alternate;
+}
+@keyframes cine-scan {
+  from { transform: translateY(0); }
+  to { transform: translateY(6px); }
+}
+@keyframes cine-noise {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(-2px, 1px); }
+}
+@keyframes cine-glitch {
+  0% { transform: translate(0, 0); opacity: 0.45; }
+  40% { transform: translate(-8px, 2px); opacity: 0.8; }
+  70% { transform: translate(6px, -3px); opacity: 0.3; }
+  100% { transform: translate(0, 0); opacity: 0.5; }
+}
+@keyframes cine-ken {
+  from { transform: scale(1); }
+  to { transform: scale(1.08); }
+}
+
+@layer base {
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
