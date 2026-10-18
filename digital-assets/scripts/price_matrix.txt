@@ -1,0 +1,6 @@
+SKU                      Personal  Commercial  Extended
+01 VOIDCROWN Playable    7.99      29          79
+02 Skill Pack IA         4.99      19          49
+03 Solar Physics Lab     5.99      24          59
+04 FORJA Engineering Kit 9.99      39          99
+05 Bundle Legion Omega   19.99     79          199

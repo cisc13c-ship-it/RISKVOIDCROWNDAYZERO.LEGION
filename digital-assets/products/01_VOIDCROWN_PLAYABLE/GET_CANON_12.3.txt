@@ -1,0 +1,6 @@
+CANON 12.3 (ORO):
+Drive: VOIDCROWN_LEGION_41.0_GOLD / VOIDCROWN_CANON.html
+file_id: 1J4hnIfKRO-rzYKqhuOBak-0ziRITkvGQ
+Tamaño esperado: 177887 bytes
+SHA256 esperado (sandbox previo): e54bb455…
+Estado: CANDIDATE preservado — verificar en tu browser.

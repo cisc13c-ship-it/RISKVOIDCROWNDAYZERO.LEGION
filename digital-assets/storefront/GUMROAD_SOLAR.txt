@@ -1,0 +1,7 @@
+Solar Smash Risk Lab v1.3 — Physics sandbox HTML5
+
+Drag planets. Real-ish n-body gravity. Collisions. God Mode rings. Export JSON.
+
+Instant download. Open the HTML — no install.
+
+Includes: single HTML file + license + README.
